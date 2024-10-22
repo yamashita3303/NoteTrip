@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'app/css/cost_form.css' %}">
+    <script src="{% static 'app/js/cost_form.js' %}"></script>
+    <title>Document</title>
+</head>
+<body>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="id_cost_name">購入物</label>
+            {{ cost_form.cost_name }}
+        </div>
+    
+        <div class="form-group">
+            <label for="id_cost_genre">ジャンル</label>
+            {{ cost_form.cost_genre }}
+        </div>
+    
+        <div class="form-group">
+            <label for="id_cost_wallet">財布</label>
+            {{ cost_form.cost_wallet }}
+        </div>
+    
+        <div id="payers-form-container">
+            <div class="form-group" id="payer-group" style="display: none;"> <!-- 初めから非表示 -->
+                <label for="id_cost_payers">支払者</label>
+                {{ cost_form.cost_payers }}
+            </div>
+        
+            <div class="form-group" id="money-group" style="display: none;"> <!-- 初めから非表示 -->
+                <label for="id_cost_money">費用</label>
+                {{ cost_form.cost_money }}
+            </div>
+        </div>
+
+        <!-- 支払者、費用追加ボタン -->
+        <button type="button" class="btn btn-secondary"  id="addpayers-group" style="display: none;" onclick="addPayers()">+ 支払者、費用を追加</button>
+        <!-- 支払者、費用削除ボタン -->
+        <button type="button" class="btn btn-secondary"  id="subpayers-group" style="display: none;" onclick="subPayers()">- 支払者、費用を削除</button><br>
+
+    
+        <button type="submit">送信</button>
+    </form>
+</body>
+</html>
