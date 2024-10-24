@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅行プラン一覧</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f0f0;
+            color: #2c2c2c;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* 左寄せに変更 */
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 700;
+            color: #1c1c1c;
+            margin-bottom: 60px;
+            letter-spacing: 2px;
+        }
+
+        /* セクションタイトルのスタイル */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1c1c1c;
+            margin-bottom: 20px; /* 下線とタイトルの間の余白を調整 */
+            position: relative;
+            text-align: left; /* 左寄せ */
+            width: auto; /* 幅を自動に設定 */
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 3px;
+            background-color: #007BFF;
+            bottom: -10px; /* 下線の位置を調整 */
+            left: 0; /* 左に配置 */
+        }
+
+        .plan-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start; /* 左寄せに変更 */
+            gap: 40px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%; /* 幅を100%に設定 */
+        }
+
+        .plan-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            width: 340px;
+            height: 260px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .plan-item:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .plan-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .plan-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.75);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .plan-item:hover .plan-title {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #000;
+        }
+
+        .action-buttons {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons a {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 8px;
+            border-radius: 50%;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .action-buttons a:hover {
+            background-color: #007BFF;
+            color: #fff;
+        }
+
+        .action-buttons .delete:hover {
+            background-color: #dc3545;
+        }
+
+        .no-plans {
+            font-size: 18px;
+            color: #888;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .create-plan {
+            border-radius: 20px;
+            width: 340px;
+            height: 260px;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            margin-bottom: 40px; /* Add spacing below */
+            text-decoration: none; /* Remove underline from the link */
+        }
+
+        .create-plan:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .create-plan i {
+            font-size: 50px;
+            color: #555;
+        }
+
+        section {
+            margin-bottom: 60px;
+            width: 100%; /* 幅を100%に設定 */
+            text-align: left; /* 左寄せ */
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- これからの旅行セクション -->
+    <section class="upcoming-section">
+        <h2 class="section-title">これからの旅行</h2>
+        <ul class="plan-list">
+            <!-- 新規作成ボタン -->
+            <a href="{% url 'create_plan' %}" class="create-plan">
+                <i class="fas fa-plus"></i>
+            </a>
+            {% for plan in upcoming_plans %}
+                <li class="plan-item">
+                    <a href="{% url 'plan_detail' plan.id %}">  <!-- 画像をクリックで詳細ページに飛ぶ -->
+                        {% load static %}
+                        <img src="{% if plan.image %}{{ plan.image.url }}{% else %}{% static 'app/images/muzi.jpg' %}{% endif %}" alt="旅行プランの画像" class="plan-image">
+                    </a>
+                    <div class="action-buttons">
+                        <a href="{% url 'edit_plan' plan.id %}" title="編集">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'delete_plan' plan.id %}" class="delete" title="削除">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+                    <div class="plan-title">{{ plan.title }}</div>
+                </li>
+            {% empty %}
+                <li class="no-plans">これからの旅行プランはありません。</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <!-- 過去の旅行セクション -->
+    <section class="past-section">
+        <h2 class="section-title">過去の旅行</h2>
+        <ul class="plan-list">
+            {% for plan in past_plans %}
+                <li class="plan-item">
+                    <a href="{% url 'plan_detail' plan.id %}">  <!-- 画像をクリックで詳細ページに飛ぶ -->
+                        {% load static %}
+                        <img src="{% if plan.image %}{{ plan.image.url }}{% else %}{% static 'app/images/muzi.jpg' %}{% endif %}" alt="旅行プランの画像" class="plan-image">
+                    </a>
+                    <div class="action-buttons">
+                        <a href="{% url 'edit_plan' plan.id %}" title="編集">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'delete_plan' plan.id %}" class="delete" title="削除">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+                    <div class="plan-title">{{ plan.title }}</div>
+                </li>
+            {% empty %}
+                <li class="no-plans">過去の旅行プランはありません。</li>
+            {% endfor %}
+        </ul>
+    </section>
+</body>
+</html>
