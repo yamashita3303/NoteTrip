@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Cost
-from .forms import CostForm
+from .models import Cost, Payment
+from .forms import CostForm, PaymentForm
 from django.views import View
 
 def cost_home(request):
@@ -8,8 +8,10 @@ def cost_home(request):
 
 def cost_list(request):
     all_costs = Cost.objects.all()
+    all_payments = Payment.objects.all()
     context = {
         'all_costs': all_costs,
+        'all_payments': all_payments,
     }
     return render(request, "app/cost_list.html", context)
 
@@ -18,9 +20,11 @@ class CostCreateView(View):
     def get(self, request):
         # インスタンスの作成
         cost_form = CostForm()
+        payment_form = PaymentForm()
 
         context = {
             'cost_form': cost_form,
+            'payment_form': payment_form,
         }
         return render(request, 'app/cost_form.html', context)
     
@@ -37,6 +41,22 @@ class CostCreateView(View):
             cost = cost_form.save(commit=False)
             cost.user = request.user  # ログインしているユーザーを設定
             cost.save()
+
+            # 支払者と費用を取得
+            payers = request.POST.getlist('payment_payers')  # 'payers'のリストを取得
+            print(payers)
+            money = request.POST.getlist('payment_money')    # 'money'のリストを取得
+            print(money)
+
+             # 支払い情報を保存
+            for payers, money in zip(payers, money):
+                payment = Payment(
+                    cost=cost,
+                    payment_payers=payers,
+                    payment_money=money
+                )
+                payment.save()
+
             return redirect('app:cost_home')
 
         # フォームが無効なら再表示

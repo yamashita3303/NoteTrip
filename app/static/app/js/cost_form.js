@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const moneyGroup = document.getElementById('money-group');
     const addpayersGroup = document.getElementById('addpayers-group');
     const subpayersGroup = document.getElementById('subpayers-group');
-    const payerInput = document.getElementById('id_cost_payers');  // 支払者の入力フィールド
-    const moneyInput = document.getElementById('id_cost_money');  // 費用の入力フィールド
+    const payerInput = document.getElementById('id_payment_payers');  // 支払者の入力フィールド
+    const moneyInput = document.getElementById('id_payment_money');  // 費用の入力フィールド
 
     walletRadios.forEach(radio => {
         radio.addEventListener('change', function() {
@@ -49,7 +49,7 @@ function addPayers() {
     // 支払者名フィールドを作成
     const payersInput = document.createElement("input");
     payersInput.type = "text";
-    payersInput.name = "payers";
+    payersInput.name = "payment_payers";
     payersInput.classList.add("form-control");
 
     // 費用のラベル作成
@@ -59,7 +59,7 @@ function addPayers() {
     // 費用フィールドを作成
     const moneyInput = document.createElement("input");
     moneyInput.type = "text";
-    moneyInput.name = "money";
+    moneyInput.name = "payment_money";
     moneyInput.classList.add("form-control");
 
     // 支払者と費用を新しい材料divに追加

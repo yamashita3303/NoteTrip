@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Cost
+from .models import Cost, Payment
 
 class CostForm(ModelForm):
     class Meta:
@@ -9,8 +9,6 @@ class CostForm(ModelForm):
             "cost_name",
             "cost_genre",
             "cost_wallet",
-            "cost_payers",
-            "cost_money",
         ]
         widgets = {
             'cost_wallet': forms.RadioSelect,  # ラジオボタンにする
@@ -18,3 +16,11 @@ class CostForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(CostForm, self).__init__(*args, **kwargs)
         self.fields['cost_wallet'].empty_label = None  # 空白選択肢を無効化
+
+class PaymentForm(ModelForm):
+    class Meta:
+        model = Payment
+        fields = [
+            "payment_payers",
+            "payment_money",
+        ]

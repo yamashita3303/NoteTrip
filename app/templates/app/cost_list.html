@@ -10,9 +10,15 @@
         {{ i.cost_name }}
         {{ i.cost_genre }}
         {{ i.cost_wallet }}
-        {{ i.cost_payers }}
-        {{ i.cost_money }}
-        {{ i.cost_budget }}
+        <br>
+    {% endfor %}
+    {% for i in all_payments %}
+        {{ i.cost }}
+        {{ i.cost.cost_name }}
+        {{ i.cost.cost_genre }}
+        {{ i.cost.cost_wallet }}
+        {{ i.payment_payers }}
+        {{ i.payment_money }}
         <br>
     {% endfor %}
 </body>

@@ -13,8 +13,11 @@ class Cost(models.Model):
         SHARED = 'shared', '共有の財布'
         PERSONAL = 'personal', '個人の財布'
     cost_wallet = models.CharField(max_length=10, choices=WalletType. choices,verbose_name="財布の種類", default="共有の財布")
-    cost_payers = models.CharField(max_length=30, verbose_name="支払者", null=True, blank=True)
-    cost_money = models.IntegerField(verbose_name="費用")
+
+class Payment(models.Model):
+    cost = models.ForeignKey(Cost, related_name='payment', on_delete=models.CASCADE)
+    payment_payers = models.CharField(max_length=30, verbose_name="支払者", null=True, blank=True)
+    payment_money = models.IntegerField(verbose_name="費用")
     
     
     # cost_budget = models.IntegerField(verbose_name="予算", null=True, blank=True)
