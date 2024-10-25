@@ -3,10 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Cost Home</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 70vh; /* 高さを70%に設定 */
+        }
+        
+        #payersChart {
+            width: 400px;  /* 幅を400pxに設定 */
+            height: 400px; /* 高さを400pxに設定 */
+        }
+    </style>
 </head>
 <body>
     <a href="{% url 'app:cost_form' %}" class="btn btn-outline-danger">費用追加</a>
     <a href="{% url 'app:cost_list' %}" class="btn btn-outline-danger">履歴確認</a>
+    <a href="{% url 'app:cost_budget' %}" class="btn btn-outline-danger">予算入力</a>
+
+    <script id="payers-data" type="application/json">
+        {{ payments_json|safe }}
+    </script>
+    
+    <script id="alone-payers-data" type="application/json">
+        {{ alone_payments_json|safe }}
+    </script>
+    
+    <!-- 円グラフを描画するためのキャンバス -->
+    <canvas id="payersChart" width="400" height="400"></canvas>
+    <canvas id="alonePayersChart" width="400" height="400"></canvas>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 全支払者のデータを読み込む
+            const payersDataElement = document.getElementById('payers-data');
+            if (payersDataElement) {
+                const payers = JSON.parse(payersDataElement.textContent);
+    
+                // 支払者と金額のデータを抽出
+                const labels = payers.map(payer => payer.payment_payers);
+                const data = payers.map(payer => payer.total_money);
+    
+                // 円グラフを描画
+                const ctx = document.getElementById('payersChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#66cdaa', '#9370db'],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+    
+            // 指定支払者のデータを読み込む
+            const alonePayersDataElement = document.getElementById('alone-payers-data');
+            if (alonePayersDataElement) {
+                const alonePayers = JSON.parse(alonePayersDataElement.textContent);
+    
+                // ジャンルと金額のデータを抽出
+                const aloneLabels = alonePayers.map(payer => payer['cost__cost_genre']);
+                const aloneData = alonePayers.map(payer => payer.total_money);
+    
+                // 円グラフを描画
+                const aloneCtx = document.getElementById('alonePayersChart').getContext('2d');
+                new Chart(aloneCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: aloneLabels,
+                        datasets: [{
+                            data: aloneData,
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#66cdaa', '#9370db'],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

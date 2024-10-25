@@ -3,23 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Payment Details</title>
+    <!-- BootstrapのCSSを読み込む -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    {% for i in all_costs %}
-        {{ i.cost_name }}
-        {{ i.cost_genre }}
-        {{ i.cost_wallet }}
-        <br>
-    {% endfor %}
-    {% for i in all_payments %}
-        {{ i.cost }}
-        {{ i.cost.cost_name }}
-        {{ i.cost.cost_genre }}
-        {{ i.cost.cost_wallet }}
-        {{ i.payment_payers }}
-        {{ i.payment_money }}
-        <br>
-    {% endfor %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Payment Details</h2>
+
+        <!-- 支払情報を表示するテーブル -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>購入物</th>
+                    <th>ジャンル</th>
+                    <th>財布の種類</th>
+                    <th>支払者</th>
+                    <th>費用</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in all_payments %}
+                <tr>
+                    <td>{{ i.cost.cost_name }}</td>
+                    <td>{{ i.cost.get_cost_genre_display }}</td> <!-- ジャンルの表示名を取得 -->
+                    <td>{{ i.cost.get_cost_wallet_display }}</td> <!-- 財布の種類の表示名を取得 -->
+                    <td>{{ i.payment_payers }}</td>
+                    <td>{{ i.payment_money }} 円</td> <!-- 数値にカンマを追加 -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- 支払の追加ボタン -->
+        <a href="{% url 'app:cost_form' %}" class="btn btn-primary">費用追加</a>
+    </div>
+
+    <!-- BootstrapのJSと依存ライブラリを読み込む -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

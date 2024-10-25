@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Cost, Payment
+from .models import Cost, Payment, Budget
 
 class CostForm(ModelForm):
     class Meta:
@@ -23,4 +23,11 @@ class PaymentForm(ModelForm):
         fields = [
             "payment_payers",
             "payment_money",
+        ]
+
+class BudgetForm(ModelForm):
+    class Meta:
+        model = Budget
+        fields = [
+            "budget",
         ]

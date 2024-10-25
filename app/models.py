@@ -19,5 +19,5 @@ class Payment(models.Model):
     payment_payers = models.CharField(max_length=30, verbose_name="支払者", null=True, blank=True)
     payment_money = models.IntegerField(verbose_name="費用")
     
-    
-    # cost_budget = models.IntegerField(verbose_name="予算", null=True, blank=True)
+class Budget(models.Model):
+    budget = models.IntegerField(verbose_name="予算", null=True, blank=True)
