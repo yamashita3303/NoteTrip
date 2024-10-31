@@ -24,7 +24,7 @@ def create_plan(request):
         plan.save()
 
         return redirect('home')
-    return render(request, 'bookmark_create.html')
+    return render(request, 'app/bookmark_create.html')
 
 # ホーム画面
 @login_required
@@ -38,7 +38,7 @@ def home(request):
         'upcoming_plans': upcoming_plans,
         'past_plans': past_plans
     }
-    return render(request, 'home.html', context)
+    return render(request, 'app/home.html', context)
 
 # プラン編集
 @login_required
@@ -59,7 +59,7 @@ def edit_plan(request, plan_id):
     context = {
         'plan': plan
     }
-    return render(request, 'bookmark_edit.html', context)
+    return render(request, 'app/bookmark_edit.html', context)
 
 # プラン削除
 @login_required
@@ -72,7 +72,7 @@ def delete_plan(request, plan_id):
     context = {
         'plan': plan
     }
-    return render(request, 'bookmark_delete.html', context)
+    return render(request, 'app/bookmark_delete.html', context)
 
 @login_required
 def plan_detail(request, plan_id):
@@ -80,4 +80,8 @@ def plan_detail(request, plan_id):
     context = {
         'plan': plan  # プランの情報をコンテキストに渡す
     }
-    return render(request, 'plan_detail.html', context)
+    return render(request, 'app/plan_detail.html', context)
+
+
+def get_events(request):
+    return render(request, 'app/calendar.html')

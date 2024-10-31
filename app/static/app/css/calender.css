@@ -1,0 +1,86 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+#controls {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#controls button {
+    font-size: 16px;
+    padding: 10px;
+    margin: 0 10px;
+}
+
+#monthDisplay {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#calendar {
+    text-align: center;
+}
+
+.calendar {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.calendar th {
+    background-color: #9a9f9a;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+.calendar td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.calendar td.today {
+    background-color: #ffeb3b;
+}
+
+.calendar td.mute {
+    color: #999;
+}
+
+.calendar td:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+/* モーダルのスタイル */
+#modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+#modal h3 {
+    margin: 0 0 10px;
+}
+
+#modal input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+#modal button {
+    padding: 10px;
+    margin-right: 10px;
+}
