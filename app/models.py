@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):
         return self.username
 
 class Plan(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=30)  # タイトル
     destination = models.CharField(max_length=30)  # 旅行先
     start_dt = models.DateField()  # 開始日
@@ -18,7 +19,6 @@ class Plan(models.Model):
     total_cost = models.FloatField(null=True, blank=True)  # 費用合計
     image = models.ImageField(upload_to='trip_images/', null=True, blank=True)  # 画像フィールド
     # members = models.ManyToManyField(User, related_name='trips', blank=True)  # メンバー
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_trips')  # 作成者
 
     def __str__(self):
         return self.title

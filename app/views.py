@@ -116,6 +116,7 @@ def logoutView(request):
 @login_required
 def create_plan(request):
     if request.method == 'POST':
+        user = request.user
         title = request.POST.get('trip-title')
         estimated_cost = request.POST.get('estimated-cost')
         departure_date = request.POST.get('departure-date')
@@ -124,6 +125,7 @@ def create_plan(request):
 
         # Planモデルのインスタンスを作成して保存
         plan = Plan(
+            user=user,
             title=title,
             start_dt=departure_date,
             end_dt=return_date,
@@ -138,10 +140,11 @@ def create_plan(request):
 # ホーム画面
 @login_required
 def home(request):
+    user = request.user  # ログイン中のユーザーを取得
     current_date = timezone.now().date()  # 現在の日付を取得
     # プランを現在の日付を基準に分けて取得
-    upcoming_plans = Plan.objects.filter(start_dt__gte=current_date).order_by('start_dt')  # これからの予定
-    past_plans = Plan.objects.filter(start_dt__lt=current_date).order_by('start_dt')  # 過去の予定
+    upcoming_plans = Plan.objects.filter(start_dt__gte=current_date, user=user).order_by('start_dt')  # これからの予定
+    past_plans = Plan.objects.filter(start_dt__lt=current_date, user=user).order_by('start_dt')  # 過去の予定
 
     context = {
         'upcoming_plans': upcoming_plans,
