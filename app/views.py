@@ -14,6 +14,9 @@ from django.utils.encoding import force_str
 from .models import Plan
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.http import HttpResponse
+import qrcode
+from django.urls import reverse
 
 # ログインビュー
 def loginView(request):
@@ -194,3 +197,36 @@ def plan_detail(request, plan_id):
 
 def get_events(request):
     return render(request, 'app/calendar.html')
+
+def member(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)  # 特定のプランを取得
+    context = {
+        'plan': plan  # プランの情報をコンテキストに渡す
+    }
+    return render(request, 'app/member.html', context)
+
+# QRコード生成ビュー
+@login_required
+def generate_qr(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)
+    # url = request.build_absolute_uri(reverse('member', args=[plan_id]))  # 名前空間 'app' を使う
+    url = f"http://127.0.0.1:8000/detail/{plan_id}/member/qr/shared/"
+    qr = qrcode.make(url)
+
+    # QRコード画像をレスポンスとして返す
+    response = HttpResponse(content_type="image/png")
+    qr.save(response, "PNG")
+    return response
+
+def shared(request, plan_id):
+    # しおりの情報を取得
+    plan = get_object_or_404(Plan, id=plan_id)
+
+    # ログインしているユーザーがメンバーとして登録されていない場合、登録処理を行う
+    if request.user.is_authenticated and request.user not in plan.members.all():
+        plan.members.add(request.user)  # 「メンバー」のフィールドが多対多関係として存在することを想定
+
+    context = {
+        'plan': plan,
+    }
+    return render(request, 'app/shared.html', context)

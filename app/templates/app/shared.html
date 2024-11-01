@@ -1,0 +1,13 @@
+<!-- app/shared_plan_detail.html -->
+
+<h2>{{ plan.title }}のしおり</h2>
+<p>{{ plan.description }}</p>
+
+<!-- 共有されている場合の案内や編集リンク -->
+{% if user in plan.members.all %}
+    <p>あなたはこのしおりのメンバーです。</p>
+    <a href="{% url 'edit_plan' plan.id %}">しおりを編集する</a>
+{% else %}
+    <p>しおりにアクセスするには、メンバーとして登録してください。</p>
+{% endif %}
+

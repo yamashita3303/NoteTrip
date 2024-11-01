@@ -61,6 +61,7 @@
         <p><strong>帰還日:</strong> {{ plan.end_dt }}</p>
         <p><strong>予算:</strong> ¥{{ plan.budget }}</p>
         <p><strong>詳細:</strong> {{ plan.description }}</p> <!-- プランの詳細説明があれば表示 -->
+        <a href="{% url 'member' plan_id=plan.id %}" class="member">メンバー</a>
     </div>
 
     <a href="{% url 'home' %}" class="back-link">戻る</a>
