@@ -18,7 +18,7 @@ class Plan(models.Model):
     budget = models.FloatField(null=True, blank=True)  # 予算
     total_cost = models.FloatField(null=True, blank=True)  # 費用合計
     image = models.ImageField(upload_to='trip_images/', null=True, blank=True)  # 画像フィールド
-    # members = models.ManyToManyField(User, related_name='trips', blank=True)  # メンバー
+    members = models.ManyToManyField(CustomUser, related_name='members', blank=True)  # メンバー
 
     def __str__(self):
         return self.title

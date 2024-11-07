@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.views import View
 from .models import CustomUser
 from .forms import CustomUserCreationForm
 from django.contrib.auth.models import User
@@ -141,6 +142,7 @@ def create_plan(request):
 @login_required
 def home(request):
     user = request.user  # ログイン中のユーザーを取得
+    print("--------", user, "--------")
     current_date = timezone.now().date()  # 現在の日付を取得
     # プランを現在の日付を基準に分けて取得
     upcoming_plans = Plan.objects.filter(start_dt__gte=current_date, user=user).order_by('start_dt')  # これからの予定
@@ -158,6 +160,7 @@ def edit_plan(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)
 
     if request.method == 'POST':
+        user = request.user
         plan.title = request.POST.get('trip-title')
         plan.start_dt = request.POST.get('departure-date')
         plan.end_dt = request.POST.get('return-date')
@@ -197,3 +200,81 @@ def plan_detail(request, plan_id):
 
 def get_events(request):
     return render(request, 'app/calendar.html')
+
+def member(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)  # 特定のプランを取得
+    context = {
+        'plan': plan  # プランの情報をコンテキストに渡す
+    }
+    return render(request, 'app/member.html', context)
+
+class ShareView(View):
+    def get(self, request, plan_id):
+        plan = get_object_or_404(Plan, id=plan_id)  # 特定のプランを取得
+        context = {
+            'plan': plan  # プランの情報をコンテキストに渡す
+        }
+        return render(request, 'app/share.html', context)
+
+    def post(self, request, plan_id):
+        plan = get_object_or_404(Plan, id=plan_id)
+        email = request.POST.get('email')
+        try:
+            user = CustomUser.objects.get(email=email)
+            subject = 'NoteTrip プラン共有のお知らせ'
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            
+            # 承認リンクの生成
+            approval_link = request.build_absolute_uri(f'/approve/{plan_id}/{uid}/{token}/')
+            context = {
+                'plan': plan,
+                'user': user,
+                'approval_link': approval_link,
+            }
+
+            # メールコンテンツを生成して送信
+            html_content = render_to_string('app/share_email.html', context)
+            text_content = strip_tags(html_content)
+            email_message = EmailMultiAlternatives(
+                subject=subject,
+                body=text_content,
+                from_email='from@example.com',
+                to=[user.email],
+            )
+            email_message.attach_alternative(html_content, 'text/html')
+            email_message.send()
+            
+            messages.success(request, 'プラン共有メールが送信されました')
+            return redirect('plan_detail', plan_id=plan_id)
+
+        except CustomUser.DoesNotExist:
+            messages.error(request, 'そのメールアドレスは登録されていません')
+            return redirect('share', plan_id=plan_id)
+
+share = ShareView.as_view()
+
+def approve_view(request, plan_id, uid, token):
+    try:
+        uid = urlsafe_base64_decode(uid).decode()
+        user = CustomUser.objects.get(pk=uid)
+        plan = get_object_or_404(Plan, id=plan_id)
+
+        # Tokenの確認
+        if default_token_generator.check_token(user, token):
+            if request.method == 'POST':
+                if 'accept' in request.POST:
+                    plan.members.add(user)  # メンバーとして登録
+                    login(request, user)
+                    messages.success(request, 'プランに参加しました。')
+                else:
+                    messages.info(request, 'プラン参加を拒否しました。')
+                return redirect('home')
+            return render(request, 'app/approve.html', {'plan': plan, 'user': user})
+
+        else:
+            messages.error(request, 'このリンクは無効です。')
+            return redirect('home')
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        messages.error(request, '無効なリンクです。')
+        return redirect('home')

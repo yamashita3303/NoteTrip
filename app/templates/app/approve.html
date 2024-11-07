@@ -1,0 +1,8 @@
+<h1>{{ plan.title }} に参加しますか？</h1>
+<p>{{ user.username }}さん、このプランに参加するか拒否するかを選択してください。</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="accept">参加する</button>
+    <button type="submit" name="reject">拒否する</button>
+</form>

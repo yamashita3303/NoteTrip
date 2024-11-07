@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import create_plan, edit_plan, delete_plan, home, plan_detail, get_events
+from .views import create_plan, edit_plan, delete_plan, home, plan_detail, get_events, member, share, approve_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -17,6 +17,9 @@ urlpatterns = [
     path('edit/<int:plan_id>/', edit_plan, name='edit_plan'),
     path('delete/<int:plan_id>/', delete_plan, name='delete_plan'),
     path('detail/<int:plan_id>/', plan_detail, name='plan_detail'),
+    path('detail/<int:plan_id>/member/', member, name='member'),
+    path('detail/<int:plan_id>/member/share/', share, name='share'),
+    path('approve/<int:plan_id>/<str:uid>/<str:token>/', approve_view, name='approve'),
     path('get-events/', get_events, name='get-events'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
