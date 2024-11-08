@@ -1,20 +1,23 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
+from django.core.mail import EmailMultiAlternatives
 from django.contrib import messages
-from .models import CustomUser
-from .forms import CustomUserCreationForm
-from django.contrib.auth.models import User
+from .models import CustomUser, Application, Spot
+from .forms import CustomUserCreationForm, AssociationApplicationForm, SpotForm
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils.encoding import force_str
+from django.conf import settings
 
 # ホームビュー
 def homeView(request):
-    return render(request, 'app/home.html')
+    # ユーザーが申請を行ったかどうかを確認するロジック
+    application_exists = Application.objects.filter(applicant=request.user).exists()
+    return render(request, 'app/home.html', {'application_exists': application_exists})
 
 # ログインビュー
 def loginView(request):
@@ -108,9 +111,146 @@ def password_reset_confirmView(request, uidb64, token):
 def password_reset_doneView(request):
     return render(request, 'app/password_reset_done.html')
 
+# 申請ビュー
+def applicationView(request):
+    if request.method == 'POST':
+        form = AssociationApplicationForm(request.POST)
+        if form.is_valid():
+            # フォームデータを取得
+            sei = form.cleaned_data['sei']
+            mei = form.cleaned_data['mei']
+            sei_kana = form.cleaned_data['sei_kana']
+            mei_kana = form.cleaned_data['mei_kana']
+            organization = form.cleaned_data['organization']
+            position = form.cleaned_data['position']
+            relationship_proof = form.cleaned_data['relationship_proof']
 
+            # 申請オブジェクトの作成
+            application = Application(
+                applicant=request.user,  # 現在のユーザーを申請者として設定
+                sei=sei,
+                mei=mei,
+                organization=organization,
+                position=position,
+                relationship_proof=relationship_proof,
+            )
+            application.save()  # 申請をデータベースに保存
+            
+            # 管理者に送信するメールの内容を作成
+            applicant_id = request.user.id  # 現在のユーザーのIDを使用
+            subject = '新しい申請が届きました'
+            approve_link = f"{settings.SITE_URL}/approve/{applicant_id}/"
+            reject_link = f"{settings.SITE_URL}/reject/{applicant_id}/"
+
+            # HTMLメールの内容をレンダリング
+            html_content = render_to_string('app/application_email.html', {
+                'sei': sei,
+                'mei': mei,
+                'sei_kana': sei_kana,
+                'mei_kana': mei_kana,
+                'organization': organization,
+                'position': position,
+                'relationship_proof': relationship_proof,
+                'approve_link': approve_link,
+                'reject_link': reject_link,
+            })
+
+            # EmailMultiAlternativesを使ってメールを送信
+            email_message = EmailMultiAlternatives(
+                subject=subject,
+                body=strip_tags(html_content),  # プレーンテキスト版
+                from_email=settings.EMAIL_HOST_USER,
+                to=['fko2347019@stu.o-hara.ac.jp'],  # 管理者のメールアドレス
+            )
+            email_message.attach_alternative(html_content, 'text/html')  # HTML版を添付
+            email_message.send()
+
+            messages.success(request, '申請が成功しました！管理者が確認します。')
+            return redirect('application_complete')  # 申請完了画面にリダイレクト
+        else:
+            messages.error(request, 'フォームにエラーがあります。再度入力してください。')
+            print(form.errors)  # フォームのエラーを表示（デバッグ用）
+    else:
+        form = AssociationApplicationForm()
+
+    return render(request, 'app/application.html', {'form': form})
+
+# 申請完了ビュー
+def application_completeView(request):
+    return render(request, 'app/application_complete.html')  # 申請完了テンプレートを表示
+
+# 申請キャンセルビュー
+def application_cancelView(request, application_id):
+    # 指定された申請を取得
+    application = get_object_or_404(Application, id=application_id)
+
+    # 申請者が現在のユーザーであることを確認
+    if application.applicant == request.user:
+        application.delete()  # 申請を削除
+        messages.success(request, '申請がキャンセルされました。')
+    else:
+        messages.error(request, 'この申請をキャンセルする権限がありません。')
+
+    return redirect('home')  # ホーム画面にリダイレクト
+
+# 申請を許可するビュー
+def approve_applicationView(request, application_id):
+    # 指定された申請を取得
+    application = get_object_or_404(Application, id=application_id)
+
+    # 申請を承認する処理
+    application.status = 'approved'  # ステータスを承認済みに変更
+    application.save()
+
+    # メッセージを表示して、ホーム画面にリダイレクト
+    messages.success(request, '申請が承認されました。')
+    return redirect('add_spot')
+
+# 申請を却下するビュー
+def reject_applicationView(request, application_id):
+    # 指定された申請を取得
+    application = get_object_or_404(Application, id=application_id)
+
+    # 申請を却下する処理
+    application.status = 'rejected'  # ステータスを却下済みに変更
+    application.save()
+
+    # メッセージを表示して、ホーム画面にリダイレクト
+    messages.success(request, '申請が却下されました。')
+    return redirect('home')
 
 # ログアウトビュー
 def logoutView(request):
     logout(request)
     return redirect('login')
+
+# おすすめスポット追加ビュー
+def add_spot(request):
+    if request.method == 'POST':
+        form = SpotForm(request.POST)
+        if form.is_valid():
+            # データを一時的にセッションに保存し、確認画面へ
+            request.session['spot_data'] = form.cleaned_data
+            return redirect('add_spot_confirmation')
+    else:
+        form = SpotForm()
+    return render(request, 'app/application_form.html', {'form': form})
+
+# おすすめスポット登録内容確認ビュー
+def add_spot_confirmation(request):
+    spot_data = request.session.get('spot_data')
+    if not spot_data:
+        return redirect('add_spot')
+
+    form = SpotForm(initial=spot_data)
+    if request.method == 'POST':
+        form = SpotForm(spot_data)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'スポットが登録されました！')
+            return redirect('add_spot_success')
+    return render(request, 'app/application_form_confirmation.html', {'form': form})
+
+# おすすめスポット登録完了ビュー
+def add_spot_success(request):
+    return render(request, 'app/application_form_success.html')

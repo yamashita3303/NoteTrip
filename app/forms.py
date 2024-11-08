@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.forms import ModelForm
 from .models import CustomUser  # カスタムユーザーモデルをインポート
+from .models import Application
+from .models import Spot
 import re  # 正規表現のためにインポート
 
 class CustomUserCreationForm(UserCreationForm):
@@ -22,3 +25,14 @@ class CustomUserCreationForm(UserCreationForm):
         if not re.match(pattern, phone):
             raise forms.ValidationError('電話番号の形式が正しくありません（例: 090-1234-5678）。')
         return phone
+    
+class AssociationApplicationForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ('sei', 'sei_kana', 'mei', 'mei_kana', 'organization', 'position', 'relationship_proof')
+
+class SpotForm(forms.ModelForm):
+    class Meta:
+        model = Spot
+        fields = ["name", "address", "category", "opening_hours", "price", "rating", "notes"]
+        
