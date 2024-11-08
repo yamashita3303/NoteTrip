@@ -15,6 +15,7 @@ from django.utils.encoding import force_str
 from .models import Plan
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.db.models import Q
 
 # ログインビュー
 def loginView(request):
@@ -144,9 +145,15 @@ def home(request):
     user = request.user  # ログイン中のユーザーを取得
     print("--------", user, "--------")
     current_date = timezone.now().date()  # 現在の日付を取得
-    # プランを現在の日付を基準に分けて取得
-    upcoming_plans = Plan.objects.filter(start_dt__gte=current_date, user=user).order_by('start_dt')  # これからの予定
-    past_plans = Plan.objects.filter(start_dt__lt=current_date, user=user).order_by('start_dt')  # 過去の予定
+
+    # `user`または`members`に現在のユーザーが含まれているプランを取得
+    upcoming_plans = Plan.objects.filter(
+        Q(start_dt__gte=current_date) & (Q(user=user) | Q(members=user))
+    ).order_by('start_dt')  # これからの予定
+
+    past_plans = Plan.objects.filter(
+        Q(start_dt__lt=current_date) & (Q(user=user) | Q(members=user))
+    ).order_by('start_dt')  # 過去の予定
 
     context = {
         'upcoming_plans': upcoming_plans,
