@@ -19,5 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls), # これは元からある
-    path("", include("app.urls")), # これを追加した
+    path('checklist/', include('app.urls')),
 ]
