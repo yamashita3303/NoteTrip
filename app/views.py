@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.views import View
 from .models import CustomUser
 from .forms import CustomUserCreationForm
 from django.contrib.auth.models import User
@@ -11,10 +12,10 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils.encoding import force_str
-
-# ホームビュー
-def homeView(request):
-    return render(request, 'app/home.html')
+from .models import Plan
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.db.models import Q
 
 # ログインビュー
 def loginView(request):
@@ -36,7 +37,7 @@ def signupView(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'アカウントが作成されました')
-            return redirect('home')
+            return redirect('login')
         else:
             print(form.errors)
     else:
@@ -108,9 +109,179 @@ def password_reset_confirmView(request, uidb64, token):
 def password_reset_doneView(request):
     return render(request, 'app/password_reset_done.html')
 
-
-
 # ログアウトビュー
 def logoutView(request):
     logout(request)
     return redirect('login')
+
+# プラン作成
+@login_required
+def create_plan(request):
+    if request.method == 'POST':
+        user = request.user
+        title = request.POST.get('trip-title')
+        estimated_cost = request.POST.get('estimated-cost')
+        departure_date = request.POST.get('departure-date')
+        return_date = request.POST.get('return-date')
+        image = request.FILES.get('image-upload')
+
+        # Planモデルのインスタンスを作成して保存
+        plan = Plan(
+            user=user,
+            title=title,
+            start_dt=departure_date,
+            end_dt=return_date,
+            budget=estimated_cost,
+            image=image,
+        )
+        plan.save()
+
+        return redirect('home')
+    return render(request, 'app/bookmark_create.html')
+
+# ホーム画面
+@login_required
+def home(request):
+    user = request.user  # ログイン中のユーザーを取得
+    print("--------", user, "--------")
+    current_date = timezone.now().date()  # 現在の日付を取得
+
+    # `user`または`members`に現在のユーザーが含まれているプランを取得
+    upcoming_plans = Plan.objects.filter(
+        Q(start_dt__gte=current_date) & (Q(user=user) | Q(members=user))
+    ).order_by('start_dt')  # これからの予定
+
+    past_plans = Plan.objects.filter(
+        Q(start_dt__lt=current_date) & (Q(user=user) | Q(members=user))
+    ).order_by('start_dt')  # 過去の予定
+
+    context = {
+        'upcoming_plans': upcoming_plans,
+        'past_plans': past_plans
+    }
+    return render(request, 'app/home.html', context)
+
+# プラン編集
+@login_required
+def edit_plan(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)
+
+    if request.method == 'POST':
+        user = request.user
+        plan.title = request.POST.get('trip-title')
+        plan.start_dt = request.POST.get('departure-date')
+        plan.end_dt = request.POST.get('return-date')
+        plan.budget = request.POST.get('estimated-cost')
+        if request.FILES.get('image-upload'):
+            plan.image = request.FILES.get('image-upload')
+
+        plan.save()
+        return redirect('home')
+
+    context = {
+        'plan': plan
+    }
+    return render(request, 'app/bookmark_edit.html', context)
+
+# プラン削除
+@login_required
+def delete_plan(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)
+    if request.method == 'POST':
+        plan.delete()
+        return redirect('home')
+
+    context = {
+        'plan': plan
+    }
+    return render(request, 'app/bookmark_delete.html', context)
+
+@login_required
+def plan_detail(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)  # 特定のプランを取得
+    context = {
+        'plan': plan  # プランの情報をコンテキストに渡す
+    }
+    return render(request, 'app/plan_detail.html', context)
+
+
+def get_events(request):
+    return render(request, 'app/calendar.html')
+
+def member(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)  # 特定のプランを取得
+    context = {
+        'plan': plan  # プランの情報をコンテキストに渡す
+    }
+    return render(request, 'app/member.html', context)
+
+class ShareView(View):
+    def get(self, request, plan_id):
+        plan = get_object_or_404(Plan, id=plan_id)  # 特定のプランを取得
+        context = {
+            'plan': plan  # プランの情報をコンテキストに渡す
+        }
+        return render(request, 'app/share.html', context)
+
+    def post(self, request, plan_id):
+        plan = get_object_or_404(Plan, id=plan_id)
+        email = request.POST.get('email')
+        try:
+            user = CustomUser.objects.get(email=email)
+            subject = 'NoteTrip プラン共有のお知らせ'
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            
+            # 承認リンクの生成
+            approval_link = request.build_absolute_uri(f'/approve/{plan_id}/{uid}/{token}/')
+            context = {
+                'plan': plan,
+                'user': user,
+                'approval_link': approval_link,
+            }
+
+            # メールコンテンツを生成して送信
+            html_content = render_to_string('app/share_email.html', context)
+            text_content = strip_tags(html_content)
+            email_message = EmailMultiAlternatives(
+                subject=subject,
+                body=text_content,
+                from_email='from@example.com',
+                to=[user.email],
+            )
+            email_message.attach_alternative(html_content, 'text/html')
+            email_message.send()
+            
+            messages.success(request, 'プラン共有メールが送信されました')
+            return redirect('plan_detail', plan_id=plan_id)
+
+        except CustomUser.DoesNotExist:
+            messages.error(request, 'そのメールアドレスは登録されていません')
+            return redirect('share', plan_id=plan_id)
+
+share = ShareView.as_view()
+
+def approve_view(request, plan_id, uid, token):
+    try:
+        uid = urlsafe_base64_decode(uid).decode()
+        user = CustomUser.objects.get(pk=uid)
+        plan = get_object_or_404(Plan, id=plan_id)
+
+        # Tokenの確認
+        if default_token_generator.check_token(user, token):
+            if request.method == 'POST':
+                if 'accept' in request.POST:
+                    plan.members.add(user)  # メンバーとして登録
+                    login(request, user)
+                    messages.success(request, 'プランに参加しました。')
+                else:
+                    messages.info(request, 'プラン参加を拒否しました。')
+                return redirect('home')
+            return render(request, 'app/approve.html', {'plan': plan, 'user': user})
+
+        else:
+            messages.error(request, 'このリンクは無効です。')
+            return redirect('home')
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        messages.error(request, '無効なリンクです。')
+        return redirect('home')

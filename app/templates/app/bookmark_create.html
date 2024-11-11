@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}"> <!-- CSSファイルの読み込み -->
+    <script src="{% static 'app/js/bookmark_create.js' %}" defer></script> <!-- JavaScriptファイルの読み込み -->
+    <title>旅行プラン作成</title>
+
+</head>
+<body>
+    <h1>旅行プラン作成</h1>
+
+    <!-- CSRFトークンを含めたフォーム -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="trip-details">
+            <label for="trip-title"><strong>タイトル:</strong></label>
+            <input type="text" id="trip-title" name="trip-title" placeholder="旅行のタイトルを入力" required>
+
+            <label for="destination"><strong>旅行先:</strong></label>
+            <input type="text" id="" name="destination" placeholder="旅行先" required>
+
+
+            <label for="estimated-cost"><strong>予定費用:</strong></label>
+            <input type="number" id="estimated-cost" name="estimated-cost" placeholder="¥150,000" min="0" required>
+
+            <label for="departure-date"><strong>出発日:</strong></label>
+            <input type="date" id="departure-date" name="departure-date" required>
+
+            <label for="return-date"><strong>帰宅日:</strong></label>
+            <input type="date" id="return-date" name="return-date" required>
+
+            <label for="image-upload"><strong>設定画像:</strong></label>
+            <input type="file" id="image-upload" name="image-upload" accept="image/*" onchange="previewImage(event)">
+
+            <h2>プレビュー画像</h2>
+            <img id="image-preview" src="#" alt="プレビュー画像">
+
+            <button type="submit" style="margin-top: 20px; padding: 10px 15px; font-size: 16px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">作成</button>
+        </div>
+    </form>
+</body>
+</html>

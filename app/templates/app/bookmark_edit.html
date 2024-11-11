@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅行プラン編集</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* 余白を含めたサイズ計算 */
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s; /* 背景色の遷移を追加 */
+        }
+        button:hover {
+            background-color: #0056b3; /* ホバー時の色 */
+        }
+    </style>
+</head>
+<body>
+    <h1>旅行プラン編集</h1>
+    <form action="{% url 'edit_plan' plan.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="trip-title">旅行プラン名:</label>
+        <input type="text" id="trip-title" name="trip-title" value="{{ plan.title }}" required>
+
+        <label for="estimated-cost">予算:</label>
+        <input type="number" id="estimated-cost" name="estimated-cost" value="{{ plan.budget }}" required>
+
+        <label for="departure-date">出発日:</label>
+        <input type="date" id="departure-date" name="departure-date" value="{{ plan.start_dt|date:'Y-m-d' }}" required>
+
+        <label for="return-date">帰着日:</label>
+        <input type="date" id="return-date" name="return-date" value="{{ plan.end_dt|date:'Y-m-d' }}" required>
+
+        <label for="image-upload">画像アップロード:</label>
+        <input type="file" id="image-upload" name="image-upload">
+
+        <button type="submit">保存</button>
+    </form>
+</body>
+</html>

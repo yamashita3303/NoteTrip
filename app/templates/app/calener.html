@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/css/calendar.css' %}">
+    <script src="{% static 'app/js/calendar.js' %}" defer></script>
+</head>
+<body>
+    <div id="controls">
+        <button onclick="changeMonth(-1)">前月</button>
+        <span id="monthDisplay"></span>
+        <button onclick="changeMonth(1)">翌月</button>
+    </div>
+    <div id="calendar"></div>
+
+    <!-- モーダルウィンドウ -->
+    <div id="modal" style="display:none;">
+        <h3 id="modalDate"></h3>
+        <label for="eventText">予定を追加</label><br>
+        <input type="text" id="eventText"><br><br>
+        <button onclick="addEvent()">追加</button>
+        <button onclick="closeModal()">キャンセル</button>
+    </div>
+
+</body>
+</html>
+。
