@@ -11,6 +11,7 @@ class Schedule(models.Model):
     cost = models.FloatField()  # 費用
     memo = models.TextField(max_length=200, blank=True)  # メモ (最大200文字、空白も許可)
     day = models.IntegerField()#日数
-
+    address = models.CharField(max_length=255, blank=True, null=True)  # 住所フィールド
+    phone = models.CharField(max_length=20, blank=True, null=True)  # 電話番号フィールド
     def __str__(self):
         return f"{self.day}日目 - {self.title}"
