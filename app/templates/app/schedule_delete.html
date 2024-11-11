@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ schedule.title }} 削除</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/css/schedule.css' %}">
+</head>
+<body>
+    <h1>{{ schedule.title }} を削除しますか？</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>このスケジュールを削除します。続行しますか？</p>
+        <button type="submit">削除</button>
+        <a href="{% url 'schedule' %}">キャンセル</a>
+    </form>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<h1>{{ schedule.title }}</h1>
+<p>開始日: {{ schedule.start_dt }}</p>
+<p>終了日: {{ schedule.end_dt }}</p>
+<p>開始時間: {{ schedule.start_at }}</p>
+<p>終了時間: {{ schedule.end_at }}</p>
+<p>目的地: {{ schedule.destination }}</p>
+<p>費用: {{ schedule.cost }}</p>
+<p>メモ: {{ schedule.memo }}</p>
+<p>住所: {{ schedule.address }}</p>
+<p>電話番号: {{ schedule.phone }}</p>
+<a href="{% url 'schedule_edit' schedule.id %}">編集</a>
+<form action="{% url 'schedule_delete' schedule.id %}" method="POST">
+    {% csrf_token %}
+    <button type="submit">削除</button>
+</form>
+<a href="{% url 'schedule' %}">一覧に戻る</a>

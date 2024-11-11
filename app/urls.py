@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import create_plan, edit_plan, delete_plan, home, plan_detail, get_events, member, share, approve_view, checklist_view, add_item_view
+from .views import create_plan, edit_plan, delete_plan, home, plan_detail, get_events, member, share, approve_view, checklist_view, add_item_view, schedule, schedule_create, schedule_detail, schedule_edit, schedule_delete
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -20,7 +20,13 @@ urlpatterns = [
     path('detail/<int:plan_id>/member/', member, name='member'),
     path('detail/<int:plan_id>/member/share/', share, name='share'),
     path('approve/<int:plan_id>/<str:uid>/<str:token>/', approve_view, name='approve'),
-    path('get-events/', get_events, name='get-events'),
+    path('schedule/',schedule, name='schedule'),
+    path('schedule/<int:schedule_id>/', schedule_detail, name='schedule_detail'),
+    path('schedule/create/<int:day>/', schedule_create, name='schedule_create'),
+    path('schedule/edit/<int:schedule_id>/', schedule_edit, name='schedule_edit'),
+    path('schedule/delete/<int:schedule_id>/', schedule_delete, name='schedule_delete'),
+    path('schedule/<int:pk>/detail/',schedule_detail,name='schedule_detail'),
     path('checklist/', checklist_view, name='checklist'),
     path('checklist/add/', add_item_view, name='add_item'),
+    path('get-events/', get_events, name='get-events'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
