@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views import View
-from .models import CustomUser
+from .models import CustomUser, Plan, Checklist
+from .form import ChecklistForm
 from .forms import CustomUserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -12,7 +13,6 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils.encoding import force_str
-from .models import Plan
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models import Q
@@ -285,3 +285,22 @@ def approve_view(request, plan_id, uid, token):
     except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
         messages.error(request, '無効なリンクです。')
         return redirect('home')
+
+def checklist_view(request):
+    items = Checklist.objects.all()
+    
+    context = {
+        'items': items
+    }
+
+    return render(request, 'app/checklist.html', context)
+
+def add_item_view(request):
+    if request.method == 'POST':
+        form = ChecklistForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('checklist')
+    else:
+        form = ChecklistForm()
+    return render(request, 'app/add_item.html', {'form': form})
