@@ -6,6 +6,8 @@
 <p>目的地: {{ schedule.destination }}</p>
 <p>費用: {{ schedule.cost }}</p>
 <p>メモ: {{ schedule.memo }}</p>
+<p>住所: {{ schedule.address }}</p>
+<p>電話番号: {{ schedule.phone }}</p>
 <a href="{% url 'app:schedule_edit' schedule.id %}">編集</a>
 <form action="{% url 'app:schedule_delete' schedule.id %}" method="POST">
     {% csrf_token %}
