@@ -1,0 +1,57 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    display: flex;
+}
+
+.tab button {
+    background-color: inherit;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+.tab button:hover {
+    background-color: #ddd;
+}
+
+.tab button.active {
+    background-color: #ccc;
+}
+
+.tab button.add-tab {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.tabcontent {
+    display: none; /* 初期状態では非表示 */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-top: none; /* タブとコンテンツの間に隙間ができないようにする */
+    position: relative; /* 削除ボタンを配置するために相対位置を指定 */
+}
+
+.close-tab-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px; /* 右上に配置 */
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.close-tab-btn:hover {
+    background-color: darkred;
+}

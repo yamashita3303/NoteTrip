@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteTrip</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}">
+    <script src="{% static 'app/js/schedule.js' %}" defer></script>
+</head>
+<body>
+
+<div class="tab" id="tabContainer">
+    <!-- ループで生成するタブ -->
+    {% for day, schedules in schedules_by_day.items %}
+        <button class="tablinks" onclick="openTab(event, 'tab{{ day }}')" {% if day == 1 %}id="defaultOpen"{% endif %}>
+            {{ day }}日目
+        </button>
+    {% endfor %}
+</div>
+
+<!-- 各タブのコンテンツを生成 -->
+{% for day, schedules in schedules_by_day.items %}
+    <div id="tab{{ day }}" class="tabcontent" style="display: none;">
+        <h4>{{ day }}日目のスケジュール一覧</h4>
+        <ul>
+            {% for schedule in schedules %}
+                <li>
+                    <!-- タイトルと時間を表示。タイトルをクリックすると詳細ページに遷移 -->
+                    <a href="{% url 'app:schedule_detail' schedule.id %}"><strong>{{ schedule.title }}</strong></a><br>
+                    <span>{{ schedule.time|date:"H:i" }}</span> <!-- 時間の表示フォーマットを指定 -->
+                </li>
+            {% endfor %}
+        </ul>
+        <!-- 新しいスケジュール追加リンク -->
+        <a href="{% url 'app:schedule_create' day=day %}" class="tablinks">新しいスケジュールを追加</a>
+    </div>
+{% endfor %}
+
+</body>
+</html>
