@@ -19,8 +19,14 @@
             <p>{{ relationship_proof }}</p>
 
             <p>以下のリンクから申請を許可または却下してください:</p>
-    <a href="{{ approve_link }}" class="button" target="_self">申請を許可</a>
-    <a href="{{ reject_link }}" class="button reject">申請を却下</a>
+            <form action="{% url 'approve_application' applicant_id=applicant_id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">許可</button>
+            </form>
+            <form action="{% url 'reject_application' applicant_id=applicant_id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">却下</button>
+            </form>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

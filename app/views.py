@@ -15,15 +15,30 @@ from django.conf import settings
 
 # ホームビュー
 def homeView(request):
-    # ユーザーが申請を行ったかどうかを確認するロジック
-    application_exists = Application.objects.filter(applicant=request.user).exists()
-    return render(request, 'app/home.html', {'application_exists': application_exists})
+    user_application = None
+    if request.user.is_authenticated:
+        # ユーザーが認証されている場合、そのユーザーの申請を取得
+        user_application = Application.objects.filter(applicant=request.user).first()
+
+    # 承認ステータスをチェック
+    if user_application and user_application.is_approved == 'approved':
+        return redirect('add_spot', applicant_id=request.user.id)  # 承認時にスポット登録画面へリダイレクト
+    elif user_application and user_application.is_approved == 'rejected':
+        messages.error(request, '申請が却下されました。申請内容を再確認してください。')
+    
+    return render(request, 'app/home.html', {'user_application': user_application})
+
 
 # ログインビュー
 def loginView(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if not username or not password:
+            messages.error(request, 'ユーザー名とパスワードを入力してください')
+            return render(request, 'app/login.html')
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
@@ -31,6 +46,7 @@ def loginView(request):
         else:
             messages.error(request, 'ユーザー名かパスワードが間違っています')
     return render(request, 'app/login.html')
+
 
 # 新規登録ビュー
 def signupView(request):
@@ -97,15 +113,22 @@ def password_reset_confirmView(request, uidb64, token):
 
     if user is not None and default_token_generator.check_token(user, token):
         if request.method == 'POST':
-            new_password = request.POST['new_password']
-            user.set_password(new_password)
-            user.save()
-            messages.success(request, 'パスワードがリセットされました。')
-            return redirect('login')
+            new_password = request.POST['new_password']  # 新しいパスワード
+            new_password_confirm = request.POST['new_password_confirm']  # 確認用パスワード
+
+            if new_password == new_password_confirm:  # パスワードが一致するか確認
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, 'パスワードがリセットされました。')
+                return redirect('login')
+            else:
+                messages.error(request, 'パスワードが一致しません。再度入力してください。')
+                return render(request, 'app/password_reset_confirm.html', {'validlink': True})
         return render(request, 'app/password_reset_confirm.html', {'validlink': True})
     else:
         messages.error(request, '無効なリンクです。')
         return render(request, 'app/password_reset_confirm.html', {'validlink': False})
+
     
 # 送信完了ビュー
 def password_reset_doneView(request):
@@ -139,8 +162,8 @@ def applicationView(request):
             # 管理者に送信するメールの内容を作成
             applicant_id = request.user.id  # 現在のユーザーのIDを使用
             subject = '新しい申請が届きました'
-            approve_link = f"{settings.SITE_URL}/approve/{applicant_id}/"
-            reject_link = f"{settings.SITE_URL}/reject/{applicant_id}/"
+            approve_link = f"{settings.SITE_URL}/approve_application/{applicant_id}/"
+            reject_link = f"{settings.SITE_URL}/reject_application/{applicant_id}/"
 
             # HTMLメールの内容をレンダリング
             html_content = render_to_string('app/application_email.html', {
@@ -154,6 +177,7 @@ def applicationView(request):
                 'approve_link': approve_link,
                 'reject_link': reject_link,
             })
+
 
             # EmailMultiAlternativesを使ってメールを送信
             email_message = EmailMultiAlternatives(
@@ -195,29 +219,20 @@ def application_cancelView(request, application_id):
 
 # 申請を許可するビュー
 def approve_applicationView(request, application_id):
-    # 指定された申請を取得
     application = get_object_or_404(Application, id=application_id)
-
-    # 申請を承認する処理
-    application.status = 'approved'  # ステータスを承認済みに変更
+    application.status = 'approved'
     application.save()
-
-    # メッセージを表示して、ホーム画面にリダイレクト
     messages.success(request, '申請が承認されました。')
-    return redirect('add_spot')
+    return redirect('home')  # ホーム画面へリダイレクト
 
 # 申請を却下するビュー
 def reject_applicationView(request, application_id):
-    # 指定された申請を取得
     application = get_object_or_404(Application, id=application_id)
-
-    # 申請を却下する処理
-    application.status = 'rejected'  # ステータスを却下済みに変更
+    application.status = 'rejected'
     application.save()
+    messages.error(request, '申請が却下されました。')
+    return redirect('home')  # ホーム画面へリダイレクト
 
-    # メッセージを表示して、ホーム画面にリダイレクト
-    messages.success(request, '申請が却下されました。')
-    return redirect('home')
 
 # ログアウトビュー
 def logoutView(request):
@@ -225,7 +240,7 @@ def logoutView(request):
     return redirect('login')
 
 # おすすめスポット追加ビュー
-def add_spot(request):
+def add_spot(request, applicant_id):
     if request.method == 'POST':
         form = SpotForm(request.POST)
         if form.is_valid():
@@ -234,7 +249,7 @@ def add_spot(request):
             return redirect('add_spot_confirmation')
     else:
         form = SpotForm()
-    return render(request, 'app/application_form.html', {'form': form})
+    return render(request, 'app/application_form.html', {'form': form, 'applicant_id': applicant_id})
 
 # おすすめスポット登録内容確認ビュー
 def add_spot_confirmation(request):

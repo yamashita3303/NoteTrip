@@ -4,7 +4,6 @@ from . import views
 urlpatterns = [
     path('', views.loginView, name='login'),
     path('signup/', views.signupView, name='signup'),
-    path('password_reset/', views.password_resetView, name='password_reset'),
     path('logout/', views.logoutView, name='logout'),
     path('home/', views.homeView, name='home'),
     path('password_reset/', views.password_resetView, name='password_reset'),
@@ -15,7 +14,7 @@ urlpatterns = [
     path('approve/<int:application_id>/', views.approve_applicationView, name='approve_application'),
     path('reject/<int:application_id>/', views.reject_applicationView, name='reject_application'),
     path('application_cancel/<int:application_id>/', views.application_cancelView, name='application_cancel'),
-    path('application/form/', views.add_spot, name='add_spot'),
+    path('application/form/<int:applicant_id>/', views.add_spot, name='add_spot'),
     path('application/form/confirmation/', views.add_spot_confirmation, name='add_spot_confirmation'),
     path('application/form/success/', views.add_spot_success, name='add_spot_success'),
 ]
