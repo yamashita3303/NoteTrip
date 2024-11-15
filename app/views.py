@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -285,55 +286,81 @@ def approve_view(request, plan_id, uid, token):
         messages.error(request, '無効なリンクです。')
         return redirect('home')
     
-def schedule(request):
-    day_count = 5  # 表示したい日数の上限
-    # 日ごとのスケジュールを格納する辞書
-    schedules_by_day = {day: [] for day in range(1, day_count + 1)}
-    
-    # 各スケジュールを日ごとに分類して辞書に格納
-    for schedule in Schedule.objects.all():
-        if schedule.day in schedules_by_day:
-            schedules_by_day[schedule.day].append(schedule)
+def schedule(request, plan_id):
+    # デフォルトで1日目を取得
+    day = request.GET.get('day', 1)
+    if request.method == 'POST':
+        day = request.POST.get('day')
 
-    return render(request, 'app/schedule.html', {'schedules_by_day': schedules_by_day})
+    try:
+        day = int(day)
+    except ValueError:
+        day = 1  # dayの取得に失敗した場合は1日目にリセット
+
+    print(f"Selected day: {day}")  # デバッグ用
+
+    # Planインスタンスの取得
+    plan = get_object_or_404(Plan, id=plan_id)
+    plan_days = (plan.end_dt - plan.start_dt).days + 1  # 総日数の計算
+    plan_days_range = range(1, plan_days + 1)  # 範囲を生成
+
+    # 特定の日に紐づくスケジュールの取得
+    schedules = Schedule.objects.filter(plan=plan, day=day)
+    print(f"Schedules for day {day}: {schedules}")  # デバッグ用
+
+    context = {
+        'plan': plan,
+        'plan_days_range': plan_days_range,
+        'schedules': schedules,
+        'select_day': day,  # テンプレートに渡す選択日
+    }
+
+    return render(request, 'app/schedule.html', context)
 
 # スケジュール詳細表示
-def schedule_detail(request, pk):
-    schedule = get_object_or_404(Schedule, id=pk)
-    return render(request, 'app/schedule_detail.html', {'schedule': schedule})
+def schedule_detail(request, plan_id, schedule_id):
+    plan = get_object_or_404(Plan, id=plan_id)
+    schedule = get_object_or_404(Schedule, id=schedule_id)
+    return render(request, 'app/schedule_detail.html', {'plan': plan, 'schedule': schedule})
 
 # スケジュール作成
-def schedule_create(request, day):
+def schedule_create(request, plan_id, day):
+    plan = get_object_or_404(Plan, id=plan_id)
     if request.method == 'POST':
         form = Scheduleform(request.POST)
+        print(request.POST)  # デバッグ用
         if form.is_valid():
             schedule = form.save(commit=False)
-            schedule.day = day  # タブの情報に基づき日数を設定
+            schedule.plan = plan
+            schedule.day = day  # dayが適切に保存されるか確認
             schedule.save()
-            return redirect('schedule')
+            print(f"Schedule saved with day: {schedule.day}")  # デバッグ用
+            return redirect('schedule', plan_id=plan_id)
     else:
         form = Scheduleform()
     return render(request, 'app/schedule_form.html', {'form': form})
 
 # スケジュール編集
-def schedule_edit(request, schedule_id):
+def schedule_edit(request, plan_id, schedule_id):
+    plan = get_object_or_404(Plan, id=plan_id)
     schedule = get_object_or_404(Schedule, id=schedule_id)
     if request.method == 'POST':
         form = Scheduleform(request.POST, instance=schedule)
         if form.is_valid():
             form.save()
-            return redirect('schedule')
+            return redirect('schedule', plan_id=plan_id)
     else:
         form = Scheduleform(instance=schedule)
-    return render(request, 'app/schedule_edit.html', {'form': form, 'schedule': schedule})
+    return render(request, 'app/schedule_edit.html', {'form': form, 'plan': plan, 'schedule': schedule})
 
 # スケジュール削除
-def schedule_delete(request, schedule_id):
+def schedule_delete(request, plan_id, schedule_id):
+    plan = get_object_or_404(Plan, id=plan_id)
     schedule = get_object_or_404(Schedule, id=schedule_id)
     if request.method == "POST":
         schedule.delete()  # スケジュールを削除
-        return redirect('schedule')  # インデックスページにリダイレクト
-    return render(request, 'app/schedule_delete.html', {'schedule': schedule})
+        return redirect('schedule', plan_id=plan_id)  # インデックスページにリダイレクト
+    return render(request, 'app/schedule_delete.html', {'plan': plan, 'schedule': schedule})
 
 
 def checklist_view(request):

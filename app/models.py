@@ -25,6 +25,7 @@ class Plan(models.Model):
     
 class Schedule(models.Model):
     id = models.AutoField(primary_key=True)  # 自動インクリメントの整数フィールド
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     start_dt = models.DateField()  # 開始日
     end_dt = models.DateField()  # 終了日
     start_at = models.TimeField()  # 開始時間
@@ -35,9 +36,17 @@ class Schedule(models.Model):
     phone = models.CharField(max_length=20, blank=True, null=True)  # 電話番号フィールド
     cost = models.FloatField()  # 費用
     memo = models.TextField(max_length=200, blank=True)  # メモ (最大200文字、空白も許可)
-    day = models.IntegerField()#日数
+    day = models.IntegerField(null=True, blank=True)  # 日数
+    
+    def save(self, *args, **kwargs):
+    # 開始日からの経過日数を計算
+        if self.plan and self.start_dt:
+            # start_dtがplan.start_dtよりも前の場合は0に設定
+            self.day = max((self.start_dt - self.plan.start_dt).days + 1, 1)  # 1日目から始まるように+1、負の値を防ぐ
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"{self.day}日目 - {self.title}"
+        return f"{self.title} - Day {self.day}"
 
 class Checklist(models.Model):
     CATEGORY_CHOICES = [

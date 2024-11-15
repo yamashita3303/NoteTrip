@@ -8,9 +8,9 @@
 <p>メモ: {{ schedule.memo }}</p>
 <p>住所: {{ schedule.address }}</p>
 <p>電話番号: {{ schedule.phone }}</p>
-<a href="{% url 'schedule_edit' schedule.id %}">編集</a>
-<form action="{% url 'schedule_delete' schedule.id %}" method="POST">
+<a href="{% url 'schedule_edit' plan.id schedule.id %}">編集</a>
+<form action="{% url 'schedule_delete' plan.id schedule.id %}" method="POST">
     {% csrf_token %}
     <button type="submit">削除</button>
 </form>
-<a href="{% url 'schedule' %}">一覧に戻る</a>
+<a href="{% url 'schedule' plan.id %}">一覧に戻る</a>

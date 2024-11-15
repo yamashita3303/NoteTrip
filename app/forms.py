@@ -31,7 +31,7 @@ class PlanForm(forms.ModelForm):
 class Scheduleform(forms.ModelForm):
     class Meta:
         model = Schedule
-        fields = ['start_dt', 'end_dt', 'start_at', 'end_at', 'title', 'destination', 'cost', 'memo','address','phone']
+        fields = ['start_dt', 'end_dt', 'start_at', 'end_at', 'title', 'destination', 'cost', 'memo', 'address', 'phone', 'day']
         labels = {
             'start_dt': '開始日',
             'end_dt': '終了日',
@@ -43,6 +43,7 @@ class Scheduleform(forms.ModelForm):
             'memo': 'メモ',
             'address':'住所',
             'phone':'電話番号',
+            'day':'日数',
         }
         widgets = {
             'start_dt': forms.DateInput(attrs={'type': 'date'}),  

@@ -111,14 +111,14 @@
         <nav class="navbar">
             <div class="tabs-row">
                 <a href="{% url 'plan_detail' plan.id %}" class="tab">しおり詳細</a>
-                <a href="{% url 'schedule' %}" class="tab">スケジュール</a>
+                <a href="{% url 'schedule' plan.id %}" class="tab">スケジュール</a>
                 <a href="{% url 'checklist' %}" class="tab">チェックリスト</a>
                 <a href="#" class="tab">マップ</a>
                 <a href="#" class="tab">費用</a>
             </div>
         </nav>
     </header>
-    
+   
     <div class="plan-details">
         
         {% load static %}

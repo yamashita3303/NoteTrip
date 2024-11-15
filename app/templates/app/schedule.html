@@ -6,36 +6,56 @@
     <title>NoteTrip</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'app/css/schedule.css' %}">
-    <script src="{% static 'app/js/schedule.js' %}" defer></script>
 </head>
 <body>
 
-<div class="tab" id="tabContainer">
+    <div class="tab" id="tabContainer">
+        {% for day in plan_days_range %}
+        <form action="{% url 'schedule' plan.id %}" method="post">
+            {% csrf_token %}
+            <input type="submit" id="day" name="day" value="{{ day }}"/>
+        </form>
+    {% endfor %}
+    </div>
+    
+    <!-- その日のスケジュール一覧を表示 -->
+        <h3>{{ select_day }}日目のスケジュール</h3>
+        
+        <!-- その日のスケジュールがあれば表示 -->
+        <ul>
+            {% for schedule in schedules %}
+                <li>
+                    <a href="{% url 'schedule_detail' plan.id schedule.id %}">{{ schedule.title }}</a><br>
+                    開始時刻: {{ schedule.start_at }}<br>
+                    終了時刻: {{ schedule.end_at }}<br>
+                </li>
+            {% endfor %}
+        </ul>
+        
+        <!-- その日のスケジュールを追加するリンク -->
+        <a href="{% url 'schedule_create' plan_id=plan.id day=select_day %}">
+            <button class="add-schedule-btn">{{ select_day }}日目のスケジュールを追加する</button>
+        </a>
+    </div>
+    
+    
+    <!-- <div class="tab" id="tabContainer"> -->
     <!-- ループで生成するタブ -->
-    {% for day, schedules in schedules_by_day.items %}
+    <!-- {% for day, schedules in schedules_by_day.items %}
         <button class="tablinks" onclick="openTab(event, 'tab{{ day }}')" {% if day == 1 %}id="defaultOpen"{% endif %}>
             {{ day }}日目
         </button>
     {% endfor %}
 </div>
 
-<!-- 各タブのコンテンツを生成 -->
 {% for day, schedules in schedules_by_day.items %}
-    <div id="tab{{ day }}" class="tabcontent" style="display: none;">
-        <h4>{{ day }}日目のスケジュール一覧</h4>
-        <ul>
-            {% for schedule in schedules %}
-                <li>
-                    <!-- タイトルと時間を表示。タイトルをクリックすると詳細ページに遷移 -->
-                    <a href="{% url 'schedule_detail' schedule.id %}"><strong>{{ schedule.title }}</strong></a><br>
-                    <span>{{ schedule.time|date:"H:i" }}</span> <!-- 時間の表示フォーマットを指定 -->
-                </li>
-            {% endfor %}
-        </ul>
-        <!-- 新しいスケジュール追加リンク -->
-        <a href="{% url 'schedule_create' day=day %}" class="tablinks">新しいスケジュールを追加</a>
-    </div>
-{% endfor %}
+    <h2>Day {{ day }}</h2>
+    <ul>
+        {% for schedule in schedules %}
+            <li>{{ schedule.title }} - {{ schedule.destination }} - {{ schedule.start_at }} to {{ schedule.end_at }}</li>
+        {% endfor %}
+    </ul>
+{% endfor %} -->
 
 </body>
 </html>
