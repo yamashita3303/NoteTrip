@@ -13,9 +13,11 @@
         {% for day in plan_days_range %}
         <form action="{% url 'schedule' plan.id %}" method="post">
             {% csrf_token %}
-            <input type="submit" id="day" name="day" value="{{ day }}"/>
+            <button type="submit" id="day" name="day" value="{{ day }}">
+                {{ day }}日目
+            </button>
         </form>
-    {% endfor %}
+        {% endfor %}
     </div>
     
     <!-- その日のスケジュール一覧を表示 -->
