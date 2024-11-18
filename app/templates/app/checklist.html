@@ -1,20 +1,15 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>チェックリスト</title>
-    
-</head>
-<body>
-    <h1>チェックリスト</h1>
-    <a href="{% url 'add_item' %}">アイテムを追加</a>
-    <ul>
-        {% for item in items %}
-            <li>
-                <input type="checkbox" {% if item.situation %}checked{% endif %}>
-                {{ item.name }} ({{ item.category }})
-            </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends "base/base.html" %}
+{% load static %}
+   
+{% block body %}
+<h1>チェックリスト</h1>
+<a href="{% url 'add_item' plan.id %}">アイテムを追加</a>
+<ul>
+    {% for item in items %}
+        <li>
+            <input type="checkbox" {% if item.situation %}checked{% endif %}>
+            {{ item.name }} ({{ item.category }})
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

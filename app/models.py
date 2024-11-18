@@ -49,6 +49,7 @@ class Schedule(models.Model):
         return f"{self.title} - Day {self.day}"
 
 class Checklist(models.Model):
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     CATEGORY_CHOICES = [
         ('valuables', '貴重品'),
         ('clothes', '衣類'),

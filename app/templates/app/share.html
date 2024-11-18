@@ -1,29 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <!-- メッセージの表示部分 -->
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message {{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+{% extends "base/base.html" %}
+{% load static %}
+   
+{% block body %}
+<!-- メッセージの表示部分 -->
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 
-    <form method="post"  enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="email">共有したい人のメールアドレスを入力してください</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">送信</button>
-    </form>
-</body>
-</html>
+<form method="post"  enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="email">共有したい人のメールアドレスを入力してください</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">送信</button>
+</form>
+{% endblock %}

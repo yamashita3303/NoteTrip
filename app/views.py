@@ -363,16 +363,19 @@ def schedule_delete(request, plan_id, schedule_id):
     return render(request, 'app/schedule_delete.html', {'plan': plan, 'schedule': schedule})
 
 
-def checklist_view(request):
+def checklist_view(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)
     items = Checklist.objects.all()
     
     context = {
+        'plan': plan,
         'items': items
     }
 
     return render(request, 'app/checklist.html', context)
 
-def add_item_view(request):
+def add_item_view(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)
     if request.method == 'POST':
         form = ChecklistForm(request.POST)
         if form.is_valid():
@@ -380,4 +383,4 @@ def add_item_view(request):
             return redirect('checklist')
     else:
         form = ChecklistForm()
-    return render(request, 'app/add_item.html', {'form': form})
+    return render(request, 'app/add_item.html', {'plan': plan, 'form': form})

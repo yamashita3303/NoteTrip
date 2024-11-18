@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteTrip</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'app/css/schedule.css' %}">
-</head>
-<body>
+{% extends "base/base.html" %}
+{% load static %}
+   
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'app/css/schedule.css' %}">
+{% endblock %}
 
+{% block body %}
     <div class="tab" id="tabContainer">
         {% for day in plan_days_range %}
         <form action="{% url 'schedule' plan.id %}" method="post">
@@ -58,6 +55,4 @@
         {% endfor %}
     </ul>
 {% endfor %} -->
-
-</body>
-</html>
+{% endblock %}

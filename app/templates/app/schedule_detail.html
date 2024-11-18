@@ -1,3 +1,7 @@
+{% extends "base/base.html" %}
+{% load static %}
+   
+{% block body %}
 <h1>{{ schedule.title }}</h1>
 <p>開始日: {{ schedule.start_dt }}</p>
 <p>終了日: {{ schedule.end_dt }}</p>
@@ -14,3 +18,4 @@
     <button type="submit">削除</button>
 </form>
 <a href="{% url 'schedule' plan.id %}">一覧に戻る</a>
+{% endblock %}

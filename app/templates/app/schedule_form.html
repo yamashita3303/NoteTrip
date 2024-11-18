@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新しいスケジュールの追加</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'app/css/schedule.css' %}">
-</head>
-<body>
+{% extends "base/base.html" %}
+{% load static %}
+   
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'app/css/schedule.css' %}">
+{% endblock %}
 
+{% block body %}
 <h2>新しいスケジュールを追加</h2>
 
 <form method="POST">
@@ -16,6 +13,4 @@
     {{ form.as_p }}  <!-- Djangoのフォームを自動生成して表示 -->
     <button type="submit">追加</button>
 </form>
-
-</body>
-</html>
+{% endblock %}
