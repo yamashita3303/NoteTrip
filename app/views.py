@@ -379,8 +379,10 @@ def add_item_view(request, plan_id):
     if request.method == 'POST':
         form = ChecklistForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('checklist')
+            checklist = form.save(commit=False)
+            checklist.plan = plan
+            checklist.save()
+            return redirect('checklist', plan_id=plan_id)
     else:
         form = ChecklistForm()
     return render(request, 'app/add_item.html', {'plan': plan, 'form': form})
