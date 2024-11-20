@@ -8,114 +8,123 @@
     {% block extra_styles %}
     {% endblock %}
     <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
-
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 36px;
-            color: #1c1c1c;
-        }
-
-        .plan-image {
-            max-width: 100%; /* 画像の幅を親要素に合わせる */
-            height: auto; /* 高さを自動にする */
-            border-radius: 10px;
-            margin-bottom: 20px; /* 画像の下にスペースを追加 */
-        }
-
-        .plan-details {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        .back-link {
-            margin-top: 20px;
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            background-color: #0056b3;
-        }
         .navbar {
+            position: relative;
+            background-color: #f5f5f5;
+            padding: 40px 10px; /* ヘッダー全体の余白 */
             display: flex;
-            flex-direction: column; 
+            justify-content: center; /* 左右エリアを中央に寄せる */
             align-items: center;
-            padding: 10px 20px;
-            gap: 10px; 
+            gap: 30px; /* 各エリア間のスペース */
         }
-
-        .app-name {
-            font-size: 20px;
-            font-weight: bold;
+        
+        /* 半円を突き出す円形写真 */
+        .photo-wrapper {
+            position: absolute;
+            top: 100%; /* ヘッダー下に半円分突き出す */
+            left: 50%;
+            transform: translate(-50%, -50%); /* 写真を中央揃え */
+            width: 220px; /* 写真サイズをさらに大きく */
+            height: 220px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid white; /* 写真の枠線 */
         }
-
-        .top-row {
+        
+        /* 写真内部の画像 */
+        .circular-photo {
             width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items:center;
-            padding:10px 20px;
+            height: 100%;
+            object-fit: cover; /* 写真の形を調整 */
         }
-
+        
+        /* タブの配置エリア */
         .nav-links {
-            display:flex;
-            gap:10px ;
-            margin-left:auto;
-        }
-
-        .tabs-row {
-            width: 100%;
             display: flex;
-            justify-content: center;
+            gap: 20px; /* タブ間のスペース */
             align-items: center;
-            gap: 20px;
-            border: 1px solid #000;
-            justify-content: space-between;
         }
-
-        .tab {
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            width: 100%; 
-            padding: 10px;
+        
+        /* タブ */
+        .tab1 {
             text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        .btn {
-            border-radius: 5px;
+            color: #333; /* 文字色 */
             padding: 10px 20px;
-            text-decoration: none;
+            border-radius: 5px;
             font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        
+        }
+        
+        .tab2 {
+            text-decoration: none;
+            color: #333; /* 文字色 */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-left:60px;
+        }
+        .tab3 {
+            text-decoration: none;
+            color: #333; /* 文字色 */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-left:60px;
+        }
+        .tab4 {
+            text-decoration: none;
+            color: #333; /* 文字色 */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-left:60px;
+        }
+        
+        .tab1:hover {
+            color: #FFD59E; /* ホバー時の色 */
+        }
+        
+        /* ヘッダー左右エリアを中央に寄せる */
+        .nav-links:first-child {
+            margin-right: 120px; /* 写真に近づける */
+        }
+        
+        .nav-links:last-child {
+            margin-left: 120px; /* 写真に近づける */
         }
     </style>
 </head>
 <body>
-    <h1>{{ plan.title }}</h1>
     <header>
         <nav class="navbar">
-            <div class="tabs-row">
-                <a href="{% url 'plan_detail' plan.id %}" class="tab">しおり詳細</a>
-                <a href="{% url 'schedule' plan.id %}" class="tab">スケジュール</a>
-                <a href="{% url 'checklist' plan.id %}" class="tab">チェックリスト</a>
-                <a href="#" class="tab">マップ</a>
+            <!-- 左側のリンク -->
+            <div class="nav-links">
+                <a href="{% url 'plan_detail' plan.id %}" class="tab1">しおり詳細</a>
+                <a href="{% url 'schedule' plan.id %}" class="tab2">スケジュール</a>
+            </div>
+   
+            <!-- 中央の円形写真 -->
+            <div class="photo-wrapper">
+                {%load static%}
+                <a href ="{% url 'home' %}"><img src="{%static 'app/images/ponunn.jpg'%}" alt="ponunn" class="circular-photo"></a>
+            </div>
+   
+            <!-- 右側のリンク -->
+            <div class="nav-links">
+                <a href="{% url 'checklist' plan.id %}" class="tab3">チェックリスト</a>
+                <a href="#" class="tab4">マップ</a>
             </div>
         </nav>
     </header>
