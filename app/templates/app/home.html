@@ -211,17 +211,114 @@
             text-decoration: none;
             font-size: 16px;
         }
+
+
+        @keyframes bugfix {
+  from {
+    padding: 0;
+  }  to {
+    padding: 0;
+  }
+}@-webkit-keyframes bugfix {
+  from {
+    padding: 0;
+  }  to {
+    padding: 0;
+  }
+}#overlay-button {
+  position: absolute;
+  right: 2em;
+  top: 2.5em;
+  padding: 26px 11px;
+  z-index: 5;
+  cursor: pointer;
+  user-select: none;
+}#overlay-button span {
+  height: 4px;
+  width: 35px;
+  border-radius: 2px;
+  background-color: black;
+  position: relative;
+  display: block;
+  transition: all .2s ease-in-out;
+}#overlay-button span:before {
+  top: -10px;
+  visibility: visible;
+}#overlay-button span:after {
+  top: 10px;
+}#overlay-button span:before, #overlay-button span:after {
+  height: 4px;
+  width: 35px;
+  border-radius: 2px;
+  background-color: black;
+  position: absolute;
+  content: "";
+  transition: all .2s ease-in-out;
+}#overlay-button:hover span, #overlay-button:hover span:before, #overlay-button:hover span:after {
+  background: #707070;/*ハンバーガーメニューを押したときの色*/
+}
+input[type=checkbox] {
+  display: none; 
+  }input[type=checkbox]:checked ~ #overlay {
+  visibility: visible; 
+}
+input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:checked ~ #overlay-button span {
+  background: transparent;
+    }input[type=checkbox]:checked ~ #overlay-button span:before {
+  transform: rotate(45deg) translate(7px, 7px);
+
+}input[type=checkbox]:checked ~ #overlay-button span:after {
+  transform: rotate(-45deg) translate(7px, -7px);
+
+
+}
+#overlay {
+  height: 100vh;
+  width: 30vw;
+  background: #dcdcdc;/*タブを開いた時の背景*/
+  z-index: 2;
+  visibility: hidden;
+  position: fixed;
+  top: 0; /* 上から固定 */
+  right: 0; /* 右側に固定 */
+}#overlay.active {
+
+}#overlay ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  height: 100vh;
+  padding-left: 0;
+  list-style-type: none;
+}
+#overlay ul li {
+  padding: 1em;
+}
+#overlay ul li a {
+  color: #000000;
+  text-decoration: none;
+  font-size: 1.5em;
+}
+#overlay ul li a:hover {
+  color: #f5f5f5!important;
+}
     </style>
 </head>
 <body>
-    <div class="top-row">
-        <div class="app-name">NoteTrip</div>
-        <div class ="nav-links"></div>
-            <a href="{% url 'home' %}" class="btn">ホーム</a>
-            <a href="#" class="btn">カレンダー</a>
-            <a href="#" class="btn">マイページ</a>
+    <div class="app-name">NoteTrip</div>
+    <input type="checkbox" id="overlay-input" />
+        <label for="overlay-input" id="overlay-button">
+            <span></span>
+        </label>
+        <div id="overlay">
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
         </div>
-    </div>
     
     <!-- これからの旅行セクション -->
     <section class="upcoming-section">

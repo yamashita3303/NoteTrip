@@ -8,7 +8,9 @@
     {% for item in items %}
         <li>
             <input type="checkbox" {% if item.situation %}checked{% endif %}>
-            {{ item.name }} ({{ item.category }})
+            {{ item.category }}
+
+            {{ item.name }} 
         </li>
     {% endfor %}
 </ul>

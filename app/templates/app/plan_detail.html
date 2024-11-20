@@ -3,16 +3,77 @@
    
 {% block body %}
 <div class="plan-details">
-    
-    {% load static %}
-    <img src="{% if plan.image %}{{ plan.image.url }}{% else %}{% static 'app/images/muzi.jpg' %}{% endif %}" alt="旅行プランの画像" class="plan-image">
+    <div class="plan-container">
+        <!-- 画像部分 -->
+        <div class="plan-image-container">
+            <img src="{% if plan.image %}{{ plan.image.url }}{% else %}{% static 'app/images/muzi.jpg' %}{% endif %}" alt="旅行プランの画像" class="plan-image">
+        </div>
 
-    <p><strong>出発日:</strong> {{ plan.start_dt }}</p>
-    <p><strong>帰還日:</strong> {{ plan.end_dt }}</p>
-    <p><strong>予算:</strong> ¥{{ plan.budget }}</p>
-    <p><strong>詳細:</strong> {{ plan.description }}</p> <!-- プランの詳細説明があれば表示 -->
-    <a href="{% url 'member' plan.id %}" class="back-link">メンバー</a>
+        <!-- テキスト部分 -->
+        <div class="plan-info">
+            <h2>{{ plan.title }}</h2>
+            <p><strong>出発日:</strong> {{ plan.start_dt|date:"Y年m月d日" }}</p> <!-- 出発日 -->
+            <p><strong>帰還日:</strong> {{ plan.end_dt|date:"Y年m月d日" }}</p> <!-- 帰還日 -->
+            <p><strong>詳細:</strong> {{ plan.description }}</p>
+            <a href="{% url 'member' plan.id %}" class="back-link">メンバー招待</a>
+        </div>
+    </div>
 </div>
 
-<a href="{% url 'home' %}" class="back-link">戻る</a>
+<style>
+    .plan-details {
+        padding: 20px;
+    }
+
+    .plan-container {
+        display: flex; /* 画像とテキストを横並びに */
+        gap: 40px; /* 画像とテキストの間隔 */
+        justify-content: center;
+        align-items: flex-start;
+        
+    }
+
+    .plan-image-container {
+        flex: 1;
+        max-width: 50%;
+    }
+
+    .plan-image {
+        width: 100%;
+        height: auto;
+        object-fit: cover; /* 画像のサイズ調整 */
+        border-radius: 8px; /* 画像の角を丸くする */
+    }
+
+    .plan-info {
+        flex: 1;
+        max-width: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .plan-info h2 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .plan-info p {
+        font-size: 16px;
+        margin: 8px 0;
+    }
+
+    .back-link {
+        text-decoration: none;
+        color: #333;
+        font-size: 16px;
+        margin-top: 20px;
+        font-weight: bold;
+    }
+
+    .back-link:hover {
+        color: #FFD59E; /* ホバー時の色 */
+    }
+</style>
 {% endblock %}
