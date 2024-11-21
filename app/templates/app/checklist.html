@@ -2,16 +2,22 @@
 {% load static %}
    
 {% block body %}
-<h1>チェックリスト</h1>
-<a href="{% url 'add_item' plan.id %}">アイテムを追加</a>
-<ul>
-    {% for item in items %}
+<div class="checklist">
+    <h1>チェックリスト</h1>
+    <a href="{% url 'add_item' plan.id %}">
+        <button class="add-item-button">アイテムを追加</button>
+    </a>
+    <ul>
+        {% for item in items %}
+        <input type="checkbox" {% if item.situation %}checked{% endif %}>
         <li>
-            <input type="checkbox" {% if item.situation %}checked{% endif %}>
-            {{ item.category }}
+                {{ item.category }}
 
-            {{ item.name }} 
+                {{ item.name }} 
+            
+            {% endfor %}
         </li>
-    {% endfor %}
-</ul>
-{% endblock %}
+    </ul>
+</div>
+{% endblock %} 
+

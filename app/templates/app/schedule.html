@@ -6,38 +6,38 @@
 {% endblock %}
 
 {% block body %}
-    <div class="tab" id="tabContainer">
-        {% for day in plan_days_range %}
-        <form action="{% url 'schedule' plan.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" id="day" name="day" value="{{ day }}">
-                {{ day }}日目
-            </button>
-        </form>
-        {% endfor %}
-    </div>
-    
-    <!-- その日のスケジュール一覧を表示 -->
-        <h3>{{ select_day }}日目のスケジュール</h3>
-        
-        <!-- その日のスケジュールがあれば表示 -->
-        <ul>
-            {% for schedule in schedules %}
-                <li>
-                    <a href="{% url 'schedule_detail' plan.id schedule.id %}">{{ schedule.title }}</a><br>
-                    開始時刻: {{ schedule.start_at }}<br>
-                    終了時刻: {{ schedule.end_at }}<br>
-                </li>
+    <div class="schedule">
+        <div class="tab" id="tabContainer">
+            {% for day in plan_days_range %}
+            <form action="{% url 'schedule' plan.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" id="day" name="day" value="{{ day }}">
+                    {{ day }}日目
+                </button>
+            </form>
             {% endfor %}
-        </ul>
+        </div>
         
-        <!-- その日のスケジュールを追加するリンク -->
-        <a href="{% url 'schedule_create' plan_id=plan.id day=select_day %}">
-            <button class="add-schedule-btn">{{ select_day }}日目のスケジュールを追加する</button>
-        </a>
+        <!-- その日のスケジュール一覧を表示 -->
+            <h3>{{ select_day }}日目のスケジュール</h3>
+            
+            <!-- その日のスケジュールがあれば表示 -->
+            <ul>
+                {% for schedule in schedules %}
+                    <li>
+                        <a href="{% url 'schedule_detail' plan.id schedule.id %}">{{ schedule.title }}</a><br>
+                        開始時刻: {{ schedule.start_at }}<br>
+                        終了時刻: {{ schedule.end_at }}<br>
+                    </li>
+                {% endfor %}
+            </ul>
+            
+            <!-- その日のスケジュールを追加するリンク -->
+            <a href="{% url 'schedule_create' plan_id=plan.id day=select_day %}">
+                <button class="add-schedule-btn">{{ select_day }}日目のスケジュールを追加する</button>
+            </a>
+        </div>
     </div>
-    
-    
     <!-- <div class="tab" id="tabContainer"> -->
     <!-- ループで生成するタブ -->
     <!-- {% for day, schedules in schedules_by_day.items %}
@@ -55,4 +55,7 @@
         {% endfor %}
     </ul>
 {% endfor %} -->
+
 {% endblock %}
+
+
