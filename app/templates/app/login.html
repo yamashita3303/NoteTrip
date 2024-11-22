@@ -116,7 +116,11 @@ button:hover {
     </form>
     <div class="text-center">
         <a href="{% url 'signup' %}">新規登録はこちら</a><br>
-        <a href="{% url 'password_reset' %}">パスワードを忘れた方はこちら</a>
+        <a href="{% url 'password_reset' %}">パスワードを忘れた方はこちら</a><br>
+
+        <!-- 管理者ログインページへのリンク -->
+        <a href="{%url 'admin_login' %}">管理者はこちら</a>
+    
     </div>
 </div>
 </body>

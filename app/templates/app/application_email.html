@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新しい申請が届きました</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4 mt-5"> <!-- mt-5 でフォーム全体を下に下げる -->
+                <h2 class="text-center mb-4">新しい申請が届きました</h2>
+                <p>ユーザー名: {{ username }}</p>
+                <p>氏名: {{ sei }} {{ mei }}</p>
+                <p>フリガナ: {{ sei_kana }} {{ mei_kana }}</p>
+                <p>所属団体名: {{ organization }}</p>
+                <p>役職: {{ position }}</p>
+                <p>観光協会との関係の証明:</p>
+                <p>{{ relationship_proof }}</p>
+
+                <p>以下のリンクから申請を許可または却下してください:</p>
+                <div class="d-flex justify-content-around">
+                    <!-- 承認ボタン -->
+                    <a href="{{ approve_link }}">承認する</a>
+                    <!-- 却下ボタン -->
+                    <a href="{{ reject_link }}">却下する</a>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- カスタムJavaScript -->
+<script>
+    document.getElementById("approve-button").addEventListener("click", function(event) {
+        event.preventDefault();
+        if (confirm("この申請を承認しますか？")) {
+            window.location.href = this.href;
+        }
+    });
+
+    document.getElementById("reject-button").addEventListener("click", function(event) {
+        event.preventDefault();
+        if (confirm("この申請を却下しますか？")) {
+            window.location.href = this.href;
+        }
+    });
+</script>
+
+</body>
+</html>

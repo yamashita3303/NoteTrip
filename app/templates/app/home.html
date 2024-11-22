@@ -323,6 +323,16 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
     <!-- これからの旅行セクション -->
     <section class="upcoming-section">
         <h2 class="section-title">これからの旅行</h2>
+        <!-- 申請ボタン -->
+        {% if user.application.status == 'pending' %}
+            <button class="btn btn-secondary" disabled>申請済み</button>
+        {% elif user.application.status == 'approved' %}
+            <a href="{% url 'add_spot' applicant_id=applicant_id %}" class="btn btn-primary">おすすめスポットを追加する</a>
+        {% elif user.application.status == 'rejected' %}
+            <a href="{% url 'application' %}" class="btn btn-primary">再申請する</a>
+        {% else %}
+            <a href="{% url 'application' %}" class="btn btn-primary">申請する</a>
+        {% endif %}
         <a href="{% url 'logout' %}" class="btn btn-outline-danger">ログアウト</a>
         <ul class="plan-list">
             <!-- 新規作成ボタン -->

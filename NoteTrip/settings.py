@@ -56,7 +56,7 @@ ROOT_URLCONF = 'NoteTrip.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'app/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -138,4 +138,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'm30769665@gmail.com'  # 自分のメールアドレス
 EMAIL_HOST_PASSWORD = 'rhfr fnun kfrb tdsu'   # 自分のメールパスワードまたはアプリパスワード
+
+
+SITE_URL = 'http://127.0.0.1:8000'  # 本番環境では適切なURLに変更
+LOGIN_URL = ''  # ログイン画面のURL名
 
