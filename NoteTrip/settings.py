@@ -135,3 +135,5 @@ EMAIL_HOST_PASSWORD = 'rhfr fnun kfrb tdsu'   # 自分のメールパスワー�
 
 
 SITE_URL = 'http://127.0.0.1:8000'  # 本番環境では適切なURLに変更
+LOGIN_URL = ''  # ログイン画面のURL名
+

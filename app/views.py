@@ -1,69 +1,102 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.contrib import messages
 from .models import CustomUser, Application, Spot
 from .forms import CustomUserCreationForm, AssociationApplicationForm, SpotForm
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils.encoding import force_str
 from django.conf import settings
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 # ホームビュー
+@login_required
 def homeView(request):
-    user_application = None
-    if request.user.is_authenticated:
-        # ユーザーが認証されている場合、そのユーザーの申請を取得
-        user_application = Application.objects.filter(applicant=request.user).first()
+    print("homeViewの実行開始")
+    user_application = Application.objects.filter(applicant=request.user).first()  # ユーザーの申請を取得
 
-    # 承認ステータスをチェック
-    if user_application and user_application.is_approved == 'approved':
-        return redirect('add_spot', applicant_id=request.user.id)  # 承認時にスポット登録画面へリダイレクト
-    elif user_application and user_application.is_approved == 'rejected':
-        messages.error(request, '申請が却下されました。申請内容を再確認してください。')
+    if user_application:
+        print(f"ユーザーの申請が見つかりました: {user_application.id}")
+        if user_application.status == 'approved':
+            print("申請が承認されました。")
+            print(user_application.id)
+            # applicant_idをテンプレートに渡す
+            return render(request, 'app/home.html', {
+                'user_application': user_application,
+                'applicant_id': user_application.id,
+            })
+        elif user_application.status == 'rejected':
+            print("申請が却下されました。")
+            messages.error(request, '申請が却下されました。申請内容を再確認してください。')  # 申請が却下されていればエラーメッセージを表示
     
-    return render(request, 'app/home.html', {'user_application': user_application})
-
+    # 申請がない場合、または未承認の場合の処理
+    print("申請がない、または未承認です。")
+    return render(request, 'app/home.html', {
+        'user_application': user_application,
+        'applicant_id': None,  # デフォルト値としてNoneを渡す
+    })
 
 # ログインビュー
 def loginView(request):
+    print("loginViewの実行開始")
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         if not username or not password:
+            print("ユーザー名またはパスワードが不足しています")
             messages.error(request, 'ユーザー名とパスワードを入力してください')
             return render(request, 'app/login.html')
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            print(f"ログイン成功: {user.username}")
             login(request, user)
             return redirect('home')  # ログイン後のリダイレクト先
         else:
+            print("ログイン失敗: ユーザー名またはパスワードが間違っています")
             messages.error(request, 'ユーザー名かパスワードが間違っています')
     return render(request, 'app/login.html')
+
+def admin_loginView(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None and user.is_staff:  # 管理者ユーザーを認証
+            login(request, user)
+            return redirect('dashboard')  # ダッシュボードにリダイレクト
+        else:
+            error_message = "管理者権限が必要です"
+            return render(request, 'app/admin_login.html', {'error_message': error_message})
+    return render(request, 'app/admin_login.html')
 
 
 # 新規登録ビュー
 def signupView(request):
+    print("signupViewの実行開始")
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
+            print("アカウント作成成功")
             form.save()
             messages.success(request, 'アカウントが作成されました')
             return redirect('home')
         else:
-            print(form.errors)
+            print(f"フォームエラー: {form.errors}")
+            messages.error(request, 'アカウント作成に失敗しました。再度お試しください。')
     else:
         form = CustomUserCreationForm()
     return render(request, 'app/signup.html', {'form': form})
 
 # パスワード再設定ビュー
 def password_resetView(request):
+    print("password_resetViewの実行開始")
     if request.method == 'POST':
         email = request.POST['email']
         try:
@@ -73,7 +106,6 @@ def password_resetView(request):
             email_template_name = 'app/password_reset_email.html'
             context = {
                 'email': user.email,
-                'domain': request.get_host(),
                 'site_name': 'Your Site Name',
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': default_token_generator.make_token(user),
@@ -81,7 +113,7 @@ def password_resetView(request):
             }
 
             # リセットリンクの生成
-            reset_link = f"{context['protocol']}://{context['domain']}/password_reset_confirm/{context['uid']}/{context['token']}/"
+            reset_link = f"{settings.SITE_URL}/password_reset_confirm/{context['uid']}/{context['token']}/"
             context['reset_link'] = reset_link  # コンテキストに追加
 
             # メールのコンテンツを生成
@@ -98,9 +130,11 @@ def password_resetView(request):
             email_message.attach_alternative(html_content, 'text/html')
             email_message.send()
 
+            print("パスワードリセットリンク送信成功")
             messages.success(request, 'パスワードリセットリンクを送信しました')
             return redirect('password_reset_done')
         except CustomUser.DoesNotExist:
+            print("そのメールアドレスは登録されていません")
             messages.error(request, 'そのメールアドレスは登録されていません')
     return render(request, 'app/password_reset.html')
 
@@ -129,55 +163,45 @@ def password_reset_confirmView(request, uidb64, token):
         messages.error(request, '無効なリンクです。')
         return render(request, 'app/password_reset_confirm.html', {'validlink': False})
 
-    
 # 送信完了ビュー
 def password_reset_doneView(request):
     return render(request, 'app/password_reset_done.html')
 
 # 申請ビュー
 def applicationView(request):
+    print("applicationViewの実行開始")
     if request.method == 'POST':
         form = AssociationApplicationForm(request.POST)
         if form.is_valid():
-            # フォームデータを取得
-            sei = form.cleaned_data['sei']
-            mei = form.cleaned_data['mei']
-            sei_kana = form.cleaned_data['sei_kana']
-            mei_kana = form.cleaned_data['mei_kana']
-            organization = form.cleaned_data['organization']
-            position = form.cleaned_data['position']
-            relationship_proof = form.cleaned_data['relationship_proof']
-
-            # 申請オブジェクトの作成
+            print("申請フォームが有効です")
+            # フォームデータを取得して保存
             application = Application(
-                applicant=request.user,  # 現在のユーザーを申請者として設定
-                sei=sei,
-                mei=mei,
-                organization=organization,
-                position=position,
-                relationship_proof=relationship_proof,
+                applicant = request.user,
+                sei = form.cleaned_data['sei'],
+                mei = form.cleaned_data['mei'],
+                sei_kana = form.cleaned_data['sei_kana'],
+                mei_kana = form.cleaned_data['mei_kana'],
+                organization = form.cleaned_data['organization'],
+                position = form.cleaned_data['position'],
+                relationship_proof = form.cleaned_data['relationship_proof'],
+                status='pending',  # 初期状態を設定
             )
-            application.save()  # 申請をデータベースに保存
-            
+            application.save()  # データベースに保存
+
             # 管理者に送信するメールの内容を作成
-            applicant_id = request.user.id  # 現在のユーザーのIDを使用
             subject = '新しい申請が届きました'
-            approve_link = f"{settings.SITE_URL}/approve_application/{applicant_id}/"
-            reject_link = f"{settings.SITE_URL}/reject_application/{applicant_id}/"
-
-            # HTMLメールの内容をレンダリング
+            
             html_content = render_to_string('app/application_email.html', {
-                'sei': sei,
-                'mei': mei,
-                'sei_kana': sei_kana,
-                'mei_kana': mei_kana,
-                'organization': organization,
-                'position': position,
-                'relationship_proof': relationship_proof,
-                'approve_link': approve_link,
-                'reject_link': reject_link,
+                'application_id': application.id,
+                'username': application.applicant.username,
+                'sei': application.sei,
+                'mei': application.mei,
+                'sei_kana': application.sei_kana,
+                'mei_kana': application.mei_kana,
+                'organization': application.organization,
+                'position': application.position,
+                'relationship_proof': application.relationship_proof,
             })
-
 
             # EmailMultiAlternativesを使ってメールを送信
             email_message = EmailMultiAlternatives(
@@ -189,11 +213,11 @@ def applicationView(request):
             email_message.attach_alternative(html_content, 'text/html')  # HTML版を添付
             email_message.send()
 
-            messages.success(request, '申請が成功しました！管理者が確認します。')
+            print("申請メール送信成功")
             return redirect('application_complete')  # 申請完了画面にリダイレクト
         else:
+            print(f"フォームにエラーがあります: {form.errors}")
             messages.error(request, 'フォームにエラーがあります。再度入力してください。')
-            print(form.errors)  # フォームのエラーを表示（デバッグ用）
     else:
         form = AssociationApplicationForm()
 
@@ -201,37 +225,58 @@ def applicationView(request):
 
 # 申請完了ビュー
 def application_completeView(request):
+    print("申請完了ビューが呼ばれました")
     return render(request, 'app/application_complete.html')  # 申請完了テンプレートを表示
 
-# 申請キャンセルビュー
-def application_cancelView(request, application_id):
-    # 指定された申請を取得
-    application = get_object_or_404(Application, id=application_id)
-
-    # 申請者が現在のユーザーであることを確認
-    if application.applicant == request.user:
-        application.delete()  # 申請を削除
-        messages.success(request, '申請がキャンセルされました。')
+# ダッシュボードビュー
+def dashboardView(request):
+    if not request.user.is_staff:
+        return redirect('home')  # 管理者以外はホームにリダイレクト
+    
+    spots = Spot.objects.all()  # 全てのスポットを取得
+    status_filter = request.GET.get('status', 'pending')  # URLのクエリパラメータから状態を取得
+    tab = request.GET.get('tab', 'requests')  # タブの状態を取得
+    
+    # 状態に基づいてフィルタリング
+    if status_filter == 'approved':
+        applications = Application.objects.filter(status=Application.APPROVED)
+    elif status_filter == 'rejected':
+        applications = Application.objects.filter(status=Application.REJECTED)
     else:
-        messages.error(request, 'この申請をキャンセルする権限がありません。')
+        applications = Application.objects.filter(status=Application.PENDING)
+    
+    return render(request, 'app/dashboard.html', {'applications': applications, 'spots': spots, 'status_filter': status_filter, 'tab': tab})
 
-    return redirect('home')  # ホーム画面にリダイレクト
+def approve_application(request, application_id):
+    application = Application.objects.get(id=application_id)
+    # 承認処理
+    if application:
+        application.status = 'approved'
+        application.save()
+        messages.success(request, '申請が承認されました。')  # 承認メッセージ
+    else:
+        messages.error(request, '操作できません。すでに承認または却下されています。')
+    return redirect('dashboard')  # ダッシュボードにリダイレクト
 
-# 申請を許可するビュー
-def approve_applicationView(request, application_id):
+def reject_application(request, application_id):
+    application = Application.objects.get(id=application_id)
+    # 却下処理
+    if application:
+        application.status = 'rejected'
+        application.save()
+        messages.error(request, '申請が却下されました。')  # 却下メッセージ
+    else:
+        messages.error(request, '操作できません。すでに承認または却下されています。')
+    return redirect('dashboard')  # ダッシュボードにリダイレクト
+
+def delete_application(request, application_id):
     application = get_object_or_404(Application, id=application_id)
-    application.status = 'approved'
-    application.save()
-    messages.success(request, '申請が承認されました。')
-    return redirect('home')  # ホーム画面へリダイレクト
+    # 削除処理
+    application.delete()
+    messages.success(request, '申請が削除されました。')
+    # 削除後にリダイレクト
+    return redirect('dashboard')
 
-# 申請を却下するビュー
-def reject_applicationView(request, application_id):
-    application = get_object_or_404(Application, id=application_id)
-    application.status = 'rejected'
-    application.save()
-    messages.error(request, '申請が却下されました。')
-    return redirect('home')  # ホーム画面へリダイレクト
 
 
 # ログアウトビュー
@@ -241,31 +286,50 @@ def logoutView(request):
 
 # おすすめスポット追加ビュー
 def add_spot(request, applicant_id):
+    print(f"おすすめスポット追加ビューが呼ばれました (Applicant ID: {applicant_id})")
     if request.method == 'POST':
         form = SpotForm(request.POST)
         if form.is_valid():
             # データを一時的にセッションに保存し、確認画面へ
+            print("フォームデータが有効です。セッションに保存します。")
             request.session['spot_data'] = form.cleaned_data
-            return redirect('add_spot_confirmation')
+            return redirect('add_spot_confirmation', applicant_id=applicant_id)
+        else:
+            print("フォームにエラーがあります。")
     else:
         form = SpotForm()
     return render(request, 'app/application_form.html', {'form': form, 'applicant_id': applicant_id})
 
 # おすすめスポット登録内容確認ビュー
-def add_spot_confirmation(request):
+def add_spot_confirmation(request, applicant_id):
+    print("スポット登録確認ビューが呼ばれました")
     spot_data = request.session.get('spot_data')
     if not spot_data:
+        print("セッションにスポットデータがありません。リダイレクトします。")
         return redirect('add_spot')
 
     form = SpotForm(initial=spot_data)
     if request.method == 'POST':
         form = SpotForm(spot_data)
         if form.is_valid():
+            print("スポットデータが有効です。保存します。")
             form.save()
             messages.success(request, 'スポットが登録されました！')
-            return redirect('add_spot_success')
-    return render(request, 'app/application_form_confirmation.html', {'form': form})
+            return redirect('add_spot_success', applicant_id=applicant_id)
+        else:
+            print("フォームにエラーがあります。")
+    return render(request, 'app/application_form_confirmation.html', {'form': form, 'applicant_id': applicant_id})
 
 # おすすめスポット登録完了ビュー
-def add_spot_success(request):
-    return render(request, 'app/application_form_success.html')
+def add_spot_success(request, applicant_id=None):
+    print("おすすめスポット登録完了ビューが呼ばれました")
+    context = {'applicant_id': applicant_id}
+    return render(request, 'app/application_form_success.html', context)
+
+# おすすめスポット削除ビュー
+def delete_spot(request, spot_id):
+    spot = get_object_or_404(Spot, id=spot_id)
+    # 削除処理
+    spot.delete()
+    # 削除後にリダイレクト
+    return redirect('dashboard')

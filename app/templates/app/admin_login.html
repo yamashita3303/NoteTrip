@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン</title>
+    <title>管理者ログイン</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-4 mt-5"> <!-- mt-5 でフォーム全体を下に下げる -->
-            <h1 class="text-center mb-4">ログイン</h1>
+            <h1 class="text-center mb-4">管理者ログイン</h1>
             <form method="post"  enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-group">
@@ -24,11 +24,10 @@
                 <button type="submit" class="btn btn-primary btn-block">ログイン</button>
             </form>
             <div class="text-center mt-3">
-                <a href="{% url 'signup' %}">新規登録はこちら</a><br>
-                <a href="{% url 'password_reset' %}">パスワードを忘れた方はこちら</a><br>
+                <a href="{% url 'password_reset' %}">パスワードを忘れた場合はこちら</a><br>
 
-                <!-- 管理者ログインページへのリンク -->
-                <a href="{%url 'admin_login' %}">管理者はこちら</a>
+                <!-- 通常ログインページへのリンク -->
+                <a href="{%url 'login' %}">通常ログインに戻る</a>
             </div>
         </div>
     </div>

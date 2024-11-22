@@ -12,14 +12,16 @@
         <div class="col-md-4 mt-5"> <!-- mt-5 でフォーム全体を下に下げる -->
             <h1 class="text-center mb-4">ホーム</h1>
             <!-- 申請ボタン -->
-            {% if user_application %}
-                <div class="d-flex justify-content-between">
-                    <button class="btn btn-secondary" disabled>申請済み</button>
-            
-                </div>
+            {% if user.application.status == 'pending' %}
+                <button class="btn btn-secondary" disabled>申請済み</button>
+            {% elif user.application.status == 'approved' %}
+                <a href="{% url 'add_spot' applicant_id=applicant_id %}" class="btn btn-primary">おすすめスポットを追加する</a>
+            {% elif user.application.status == 'rejected' %}
+                <a href="{% url 'application' %}" class="btn btn-primary">再申請する</a>
             {% else %}
                 <a href="{% url 'application' %}" class="btn btn-primary">申請する</a>
             {% endif %}
+
             <!-- ログアウトボタン -->
             <a href="{% url 'logout' %}" class="btn btn-outline-danger">ログアウト</a>
         </div>
