@@ -225,9 +225,9 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
         <nav class="navbar">
             <!-- 左側のリンク -->
             <div class="nav-links">
-                <a href="{% url 'plan_detail' plan.id %}" class="tab1">しおり詳細</a>
-                <a href="{% url 'schedule' plan.id %}" class="tab2">スケジュール</a>
-            </div>
+              <a href="{% url 'plan_detail' plan.id|default:1 %}" class="tab1">しおり詳細</a>
+              <a href="{% url 'schedule' plan.id|default:1 %}" class="tab2">スケジュール</a>
+          </div>
    
             <!-- 中央の円形写真 -->
             <div class="photo-wrapper">
@@ -237,9 +237,9 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
    
             <!-- 右側のリンク -->
             <div class="nav-links">
-                <a href="{% url 'checklist' plan.id %}" class="tab3">チェックリスト</a>
-                <a href="#" class="tab4">マップ</a>
-            </div>
+              <a href="{% url 'checklist' plan.id|default:1 %}" class="tab3">チェックリスト</a>
+              <a href="#" class="tab4">マップ</a>
+          </div>
         </nav>
         
         

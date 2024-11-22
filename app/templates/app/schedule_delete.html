@@ -11,6 +11,6 @@
     {% csrf_token %}
     <p>このスケジュールを削除します。続行しますか？</p>
     <button type="submit">削除</button>
-    <a href="{% url 'schedule' %}">キャンセル</a>
+    <a href="{% url 'schedule' plan.id|default:1 %}">キャンセル</a>
 </form>
 {% endblock %}
