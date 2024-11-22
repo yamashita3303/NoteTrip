@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notetrip</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #858585, #6d6d6d);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .title {
+      font-size: 4rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #ffffff;
+      text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <script>
+    // 3秒後に別のページにリダイレクト
+    setTimeout(() => {
+      window.location.href = "{% url 'login' %}"; // 次のページのURLに置き換えてください
+    }, 5000); // 3000ms = 3秒
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Notetrip</h1>
+  </div>
+</body>
+</html>

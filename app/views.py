@@ -386,3 +386,6 @@ def add_item_view(request, plan_id):
     else:
         form = ChecklistForm()
     return render(request, 'app/add_item.html', {'plan': plan, 'form': form})
+
+def top(request):
+    return render(request, 'app/top.html')
