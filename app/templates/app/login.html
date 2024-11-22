@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ログイン</title>
     <style>
-        /* ベースのスタイル */
+
 body {
     margin: 0;
     padding: 0;
@@ -45,24 +45,24 @@ label {
     margin-bottom: 10px;
     font-size: 14px;
     font-weight: bold;
-    color: #555;
+    color: #000000;
 }
 
 input {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: none;
+    border-bottom: 2px solid #ddd; /* 下のラインのみを追加 */
     font-size: 16px;
-    background-color: #f9f9f9;
+    background-color: white; /* 背景を白に設定 */
     transition: all 0.3s ease;
 }
 
 input:focus {
-    border-color: #a9a9a9;
-    background-color: #fff;
+    border-bottom: 2px solid #a9a9a9; /* フォーカス時のライン色 */
+    background-color: white; /* フォーカス時にも背景を白に */
     outline: none;
-    box-shadow: 0 0 5px rgba(173, 173, 173, 0.3);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 button {
@@ -96,6 +96,7 @@ button:hover {
 .text-center a:hover {
     color: #000000;
 }
+
 </style>
 </head>
 <body>
