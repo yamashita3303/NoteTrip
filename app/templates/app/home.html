@@ -316,7 +316,7 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
             <ul>
                 <li><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'logout' %}">Logout</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="{% url 'application' %}">Contact</a></li>
             </ul>
         </div>
     
@@ -330,10 +330,9 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
             <a href="{% url 'add_spot' applicant_id=applicant_id %}" class="btn btn-primary">おすすめスポットを追加する</a>
         {% elif user.application.status == 'rejected' %}
             <a href="{% url 'application' %}" class="btn btn-primary">再申請する</a>
-        {% else %}
-            <a href="{% url 'application' %}" class="btn btn-primary">申請する</a>
         {% endif %}
-        <a href="{% url 'logout' %}" class="btn btn-outline-danger">ログアウト</a>
+            <a href="{% url 'application' %}" class="btn btn-primary">申請する</a>
+        
         <ul class="plan-list">
             <!-- 新規作成ボタン -->
             <a href="{% url 'create_plan' %}" class="create-plan">
