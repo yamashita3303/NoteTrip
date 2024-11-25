@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅行プラン削除</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .confirmation {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .confirmation button {
+            background-color: #dc3545; /* 赤色の削除ボタン */
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .confirmation button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation">
+        <p>本当にログアウトしますか？</p>
+            <form action="{% url 'logout' %}" method="post">Logout</a>
+            {% csrf_token %}
+            <button type="submit">削除</button>
+        </form>
+        <a href="{% url 'home' %}">キャンセル</a>
+    </div>
+</body>
+</html>

@@ -284,10 +284,6 @@ def delete_application(request, application_id):
 
 
 
-# ログアウトビュー
-def logoutView(request):
-    logout(request)
-    return redirect('login')
 
 # おすすめスポット追加ビュー
 def add_spot(request, applicant_id):
@@ -636,3 +632,15 @@ def add_item_view(request, plan_id):
 
 def top(request):
     return render(request, 'app/top.html')
+
+class LogoutView(View):
+
+    # ログアウトビュー
+    def get(self, request):
+        return render(request, 'app/logout.html')
+
+    def post(self, request):
+        logout(request)
+        return redirect('login')
+    
+logout_view = LogoutView.as_view() 
