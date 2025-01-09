@@ -644,3 +644,4 @@ class LogoutView(View):
         return redirect('login')
     
 logout_view = LogoutView.as_view() 
+

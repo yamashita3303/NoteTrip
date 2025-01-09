@@ -15,8 +15,13 @@
                 <h2>{{ plan.title }}</h2>
                 <p><strong>出発日:</strong> {{ plan.start_dt|date:"Y年m月d日" }}</p> <!-- 出発日 -->
                 <p><strong>帰還日:</strong> {{ plan.end_dt|date:"Y年m月d日" }}</p> <!-- 帰還日 -->
-                <p><strong>詳細:</strong> {{ plan.description }}</p>
-                <a href="{% url 'member' plan.id %}" class="back-link">メンバー招待</a>
+                <p><a href="{% url 'share' plan.id %}" class="invite-link">
+                    メンバー招待 <span class="arrow">≫</span>
+                </a></p>
+                
+                
+                
+
             </div>
         </div>
     </div>
@@ -66,17 +71,31 @@
         margin: 8px 0;
     }
 
-    .back-link {
-        text-decoration: none;
-        color: #333;
-        font-size: 16px;
-        margin-top: 20px;
-        font-weight: bold;
-    }
+    .invite-link {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000; /* Text color */
+    text-decoration: none; /* Remove underline initially */
+    display: inline-flex; /* Flex to align icon next to text */
+    align-items: center;
+    transition: color 0.3s ease, border-bottom 0.3s ease; /* Smooth transitions */
+}
 
-    .back-link:hover {
-        color: #FFD59E; /* ホバー時の色 */
-    }
+.invite-link:hover {
+    color: #454545; /* Darker blue on hover */
+    border-bottom: 2px solid #606060; /* Add underline on hover */
+}
+
+.invite-link .arrow {
+    margin-left: 8px; /* Space between text and the arrow */
+    font-size: 18px; /* Size of the arrow */
+    transition: transform 0.3s ease;
+}
+
+.invite-link:hover .arrow {
+    transform: translateX(5px); /* Slight movement of the arrow on hover */
+}
+
 
     
 </style>

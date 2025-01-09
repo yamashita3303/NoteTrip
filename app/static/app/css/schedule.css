@@ -1,61 +1,110 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f1f1f1 !important;
+    color: #444444; /* 落ち着いたグレーの文字色 */
+} 
+
+.schedule {
+    margin: 60px auto;
+    padding: 20px;
+    max-width: 800px;
+    background-color: #ffffff; /* 白背景 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 軽い影 */
+    border-radius: 8px;
 }
 
 .tab {
-    overflow: hidden;
-    border: 1px solid #ffffff;
-    background-color: #f1f1f1;
     display: flex;
+    border-bottom: 2px solid #cccccc; /* グレーの下線 */
+    margin-bottom: 20px;
+}
+
+.tab form {
+    flex: 1;
+    margin: 0;
 }
 
 .tab button {
-    background-color: white;
+    width: 100%;
+    background-color: #eeeeee; /* 明るいグレー */
     border: none;
     outline: none;
     cursor: pointer;
     padding: 14px 16px;
-    transition: 0.3s;
-    font-size: 17px;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+    color: #666666; /* 中間のグレー */
+    text-align: center;
+    font-weight: bold;
+    border-radius: 8px 8px 0 0;
 }
 
 .tab button:hover {
-    background-color: white;
+    background-color: #dddddd; /* もう少し濃いグレー */
+    color: #333333; /* 濃いグレー */
 }
 
 .tab button.active {
-    background-color: white;
+    background-color: #888888; /* 強調されたグレー */
+    color: #ffffff; /* 白文字 */
 }
 
-.tab button.add-tab {
-    background-color: #ffffff;
-    color: white;
+h3 {
+    color: #888888; /* グレーで統一 */
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-.tabcontent {
-    display: none; /* 初期状態では非表示 */
-    padding: 20px;
-    border: 1px solid #ffffff;
-    border-top: none; /* タブとコンテンツの間に隙間ができないようにする */
-    position: relative; /* 削除ボタンを配置するために相対位置を指定 */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.close-tab-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px; /* 右上に配置 */
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
+ul li {
+    background-color: #eeeeee; /* 明るいグレー */
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
+    display: flex;
+    flex-direction: column;
+}
+
+ul li a {
+    text-decoration: none;
+    font-size: 18px;
+    color: #444444; /* 中間グレー */
+    margin-bottom: 8px;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+ul li a:hover {
+    color: #555555; /* 少し濃いグレー */
+}
+
+ul li span {
     font-size: 14px;
+    color: #666666; /* 中間グレー */
 }
 
-.close-tab-btn:hover {
-    background-color: darkred;
+.add-schedule-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff; /* 白文字 */
+    background-color: #888888; /* 落ち着いたグレー */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.schedule {
-    margin-top: 120px;    
+.add-schedule-btn:hover {
+    background-color: #777777; /* 濃いめのグレー */
 }

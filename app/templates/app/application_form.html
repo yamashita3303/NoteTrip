@@ -5,77 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>おすすめスポット登録</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* 全体の背景色を柔らかいグレーに */
+        }
+        .container {
+            max-width: 600px; /* フォーム全体の幅を狭める */
+            background: #ffffff; /* フォーム部分の背景を白に */
+            border-radius: 10px; /* 角を丸く */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 軽いシャドウで浮かせる */
+            padding: 20px; /* 内側の余白 */
+        }
+        h2 {
+            text-align: center;
+            font-weight: bold;
+            color: #343a40; /* 濃いグレーでタイトルを強調 */
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #495057; /* ラベルを少し濃い文字色に */
+        }
+        .btn-primary {
+            background-color: #696969;
+            border: none;
+            transition: 0.3s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #868686;
+            box-shadow: 0 4px 6px rgba(177, 177, 177, 0.4); /* ホバー時に影を追加 */
+        }
+        .alert {
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">おすすめスポット登録</h2>
+        
         <!-- 登録成功メッセージ -->
         {% if messages %}
         {% for message in messages %}
         <div class="alert alert-success">{{ message }}</div>
         {% endfor %}
         {% endif %}
+
         <form action="{% url 'add_spot' applicant_id=applicant_id %}" method="POST">
             {% csrf_token %}
-        
-        <!-- スポット名 -->
-        <div class="form-group">
-            <label for="name">スポット名</label>
-            <input type="text" class="form-control" id="name" name="name" required>
-        </div>
- 
-        <!-- 住所 -->
-        <div class="form-group">
-            <label for="address">住所</label>
-            <input type="text" class="form-control" id="address" name="address" required>
-        </div>
- 
-        <!-- カテゴリー -->
-        <div class="form-group">
-            <label for="category">カテゴリー</label>
-            <select class="form-control" id="category" name="category" required>
-                <option value="観光地">観光地</option>
-                <option value="レストラン">レストラン</option>
-                <option value="カフェ">カフェ</option>
-                <option value="自然スポット">自然スポット</option>
-            </select>
-        </div>
- 
-        <!-- 営業時間 -->
-        <div class="form-group">
-            <label for="opening_hours">営業時間</label>
-            <input type="text" class="form-control" id="opening_hours" name="opening_hours" placeholder="例: 9:00-18:00">
-        </div>
- 
-        <!-- 料金 -->
-        <div class="form-group">
-            <label for="price">料金</label>
-            <input type="text" class="form-control" id="price" name="price" placeholder="例: 無料、1000円">
-        </div>
- 
-        <!-- 評価（星で） -->
-        <div class="form-group">
-            <label for="rating">評価（星で）</label>
-            <select class="form-control" id="rating" name="rating" required>
-                <option value="1.0">1 星</option>
-                <option value="2.0">2 星</option>
-                <option value="3.0">3 星</option>
-                <option value="4.0">4 星</option>
-                <option value="5.0">5 星</option>
-            </select>
-        </div>
- 
-        <!-- 補足 -->
-        <div class="form-group">
-            <label for="notes">補足</label>
-            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-        </div>
- 
-        <!-- 確認ボタン -->
-        <button type="submit" class="btn btn-primary">内容確認する</button>
-    </form>
-</div>
- 
+
+            <!-- スポット名 -->
+            <div class="form-group">
+                <label for="name">スポット名</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+
+            <!-- 住所 -->
+            <div class="form-group">
+                <label for="address">住所</label>
+                <input type="text" class="form-control" id="address" name="address" required>
+            </div>
+
+            <!-- カテゴリー -->
+            <div class="form-group">
+                <label for="category">カテゴリー</label>
+                <select class="form-control" id="category" name="category" required>
+                    <option value="観光地">観光地</option>
+                    <option value="レストラン">レストラン</option>
+                    <option value="カフェ">カフェ</option>
+                    <option value="自然スポット">自然スポット</option>
+                </select>
+            </div>
+
+            <!-- 営業時間 -->
+            <div class="form-group">
+                <label for="opening_hours">営業時間</label>
+                <input type="text" class="form-control" id="opening_hours" name="opening_hours" placeholder="例: 9:00-18:00">
+            </div>
+
+            <!-- 料金 -->
+            <div class="form-group">
+                <label for="price">料金</label>
+                <input type="text" class="form-control" id="price" name="price" placeholder="例: 無料、1000円">
+            </div>
+
+            <!-- 評価（星で） -->
+            <div class="form-group">
+                <label for="rating">評価</label>
+                <select class="form-control" id="rating" name="rating" required>
+                    <option value="1.0">1</option>
+                    <option value="1.5">1.5</option>
+                    <option value="2.0">2</option>
+                    <option value="2.5">2.5</option>
+                    <option value="3.0">3</option>
+                    <option value="3.5">3.5</option>
+                    <option value="4.0">4</option>
+                    <option value="4.5">4.5</option>
+                    <option value="5.0">5</option>
+                </select>
+            </div>
+
+            <!-- 補足 -->
+            <div class="form-group">
+                <label for="notes">補足</label>
+                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+            </div>
+
+            <!-- 確認ボタン -->
+            <button type="submit" class="btn btn-primary btn-block">内容確認する</button>
+        </form>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
