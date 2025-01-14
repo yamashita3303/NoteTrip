@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>複数地点のリアルタイムルート更新</title>
+    <style>
+        #map { height: 400px; width: 100%; }
+        #controls { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <label>出発地: <input id="origin" type="text" placeholder="例: 東京駅"></label>
+        <label>目的地: <input id="destination" type="text" placeholder="例: 京都駅"></label>
+        <br>
+        <label>経由地点:</label>
+        <div id="waypoints">
+            <input class="waypoint" type="text" placeholder="経由地 1">
+            <input class="waypoint" type="text" placeholder="経由地 2">
+        </div>
+        <button onclick="addWaypoint()">経由地を追加</button>
+        <button onclick="updateRoute()">ルート更新</button>
+    </div>
+    <div id="map"></div>
+
+    <script>
+        let map, directionsService, directionsRenderer;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 35.681382, lng: 139.766084 },
+                zoom: 7,
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
+        }
+
+        function addWaypoint() {
+            const waypointContainer = document.getElementById("waypoints");
+            const input = document.createElement("input");
+            input.type = "text";
+            input.className = "waypoint";
+            input.placeholder = `経由地 ${waypointContainer.children.length + 1}`;
+            waypointContainer.appendChild(input);
+        }
+
+        function updateRoute() {
+            const origin = document.getElementById("origin").value;
+            const destination = document.getElementById("destination").value;
+
+            if (!origin || !destination) {
+                alert("出発地と目的地を入力してください！");
+                return;
+            }
+
+            const waypointInputs = document.querySelectorAll(".waypoint");
+            const waypoints = Array.from(waypointInputs)
+                .map(input => input.value)
+                .filter(value => value.trim() !== "")
+                .map(location => ({ location: location, stopover: true }));
+
+            const request = {
+                origin: origin,
+                destination: destination,
+                waypoints: waypoints,
+                travelMode: google.maps.TravelMode.DRIVING,
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === "OK") {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    alert("ルート検索に失敗しました: " + status);
+                }
+            });
+        }
+    </script>
+
+    <!-- Google Maps APIの非同期ロード -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEP5Fu9ChgnN4H4AX872QLG5529wbSJSo&callback=initMap" async defer></script>
+</body>
+</html>

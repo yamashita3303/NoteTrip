@@ -1,9 +1,11 @@
 from collections import defaultdict
+import os
 from django.shortcuts import render, redirect, get_object_or_404, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.contrib import messages
 from django.views import View
+import openai
 from .models import CustomUser, Application, Spot, Plan, Checklist, Schedule
 from .forms import CustomUserCreationForm, PlanForm, Scheduleform, ChecklistForm, AssociationApplicationForm, SpotForm
 from django.contrib.auth.tokens import default_token_generator
@@ -644,3 +646,12 @@ class LogoutView(View):
         return redirect('login')
     
 logout_view = LogoutView.as_view() 
+
+openai.api_key = os.getenv('API_KEY')
+
+def map(request, plan_id):
+    plan = get_object_or_404(Plan, id=plan_id)
+    context = {
+        'plan': plan,
+    }
+    return render(request, 'app/map.html', context)
