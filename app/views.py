@@ -651,7 +651,11 @@ openai.api_key = os.getenv('API_KEY')
 
 def map(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)
+    # Planに紐づくスケジュールの住所リストを取得
+    address = list(Schedule.objects.filter(plan=plan).values_list('address', flat=True))
+    print(address)
     context = {
         'plan': plan,
+        'address': address,  # テンプレートに渡す目的地リスト
     }
     return render(request, 'app/map.html', context)

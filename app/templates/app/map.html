@@ -10,6 +10,7 @@
 <body>
     <div id="controls">
         <label>出発地: <input id="origin" type="text" placeholder="例: 東京駅"></label>
+        <br>
         <label>目的地: <input id="destination" type="text" placeholder="例: 京都駅"></label>
         <br>
         <label>経由地点:</label>
@@ -23,16 +24,70 @@
     <div id="map"></div>
 
     <script>
-        let map, directionsService, directionsRenderer;
+        let map, directionsService, directionsRenderer, currentPositionMarker;
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 35.681382, lng: 139.766084 },
+                center: { lat: 35.681382, lng: 139.766084 }, // 初期表示は東京駅
                 zoom: 7,
             });
 
             directionsService = new google.maps.DirectionsService();
             directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
+
+            // 現在地を取得して表示
+            getCurrentLocation();
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    (position) => {
+                        console.log(position.coords)
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        const currentLocation = new google.maps.LatLng(lat, lng);
+                        if (position.coords.accuracy > 1000) return;
+
+                        // 現在地マーカーを更新または作成
+                        if (!currentPositionMarker) {
+                            currentPositionMarker = new google.maps.Marker({
+                                position: currentLocation,
+                                map: map,
+                                title: "現在地",
+                                icon: {
+                                    path: google.maps.SymbolPath.CIRCLE,
+                                    scale: 10,
+                                    fillColor: "#4285F4",
+                                    fillOpacity: 0.6,
+                                    strokeColor: "#4285F4",
+                                    strokeWeight: 2,
+                                },
+                            });
+
+                            // 地図の初期中心を現在地に移動
+                            map.setCenter(currentLocation);
+                            map.setZoom(15); // 拡大
+                        } else {
+                            currentPositionMarker.setPosition(currentLocation);
+                        }
+
+                        // 出発地に現在地を自動設定
+                        document.getElementById("origin").value = `${lat},${lng}`;
+                    },
+                    (error) => {
+                        console.error("現在地の取得に失敗しました: ", error.message);
+                        alert("現在地の取得に失敗しました。");
+                    },
+                    {
+                        enableHighAccuracy: true, // 高精度モード
+                        maximumAge: 0,          // キャッシュを使用せず更新
+                        timeout: 20000,         // タイムアウト（10秒）
+                    }
+                );
+            } else {
+                alert("このブラウザでは現在地取得がサポートされていません。");
+            }
         }
 
         function addWaypoint() {
