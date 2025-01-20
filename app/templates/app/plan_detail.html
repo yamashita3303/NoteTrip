@@ -12,9 +12,11 @@
 
             <!-- テキスト部分 -->
             <div class="plan-info">
-                <h2>{{ plan.title }}</h2>
-                <p><strong>出発日:</strong> {{ plan.start_dt|date:"Y年m月d日" }}</p> <!-- 出発日 -->
-                <p><strong>帰還日:</strong> {{ plan.end_dt|date:"Y年m月d日" }}</p> <!-- 帰還日 -->
+                <div class="shosai">
+                    <h2>{{ plan.title }}</h2>
+                    <p><strong>出発日:</strong> {{ plan.start_dt|date:"Y年m月d日" }}</p> <!-- 出発日 -->
+                    <p><strong>帰還日:</strong> {{ plan.end_dt|date:"Y年m月d日" }}</p> <!-- 帰還日 -->
+                </div>
                 <p><a href="{% url 'share' plan.id %}" class="invite-link">
                     メンバー招待 <span class="arrow">≫</span>
                 </a></p>
@@ -28,73 +30,100 @@
 </body>
 
 <style>
-    .plan-details {
-        padding: 20px;
-    }
+   body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9; /* 優しい背景色 */
+    color: #444444; /* 落ち着いた文字色 */
+}
 
-    .plan-container {
-        display: flex; /* 画像とテキストを横並びに */
-        gap: 40px; /* 画像とテキストの間隔 */
-        justify-content: center;
-        align-items: flex-start;
-        
-    }
+.plan-details {
+    padding: 20px;
+    background-color: #ffffff; /* 白背景 */
+    max-width: 800px; /* 全体の幅を狭める */
+    margin: 120px auto;
+    border-radius: 8px; /* 角を丸くする */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 軽い影 */
+}
 
-    .plan-image-container {
-        flex: 1;
-        max-width: 50%;
-    }
+.plan-container {
+    display: flex; /* 画像とテキストを横並びに */
+    gap: 20px; /* 画像とテキストの間隔を狭く */
+    flex-wrap: wrap; /* 画面サイズに応じて折り返し */
+    justify-content: center; /* コンテンツを中央揃え */
+}
 
-    .plan-image {
-        width: 100%;
-        height: auto;
-        object-fit: cover; /* 画像のサイズ調整 */
-        border-radius: 8px; /* 画像の角を丸くする */
-    }
+.plan-image-container {
+    flex: 1;
+    max-width: 40%; /* 画像部分をやや小さめに */
+}
 
-    .plan-info {
-        flex: 1;
-        max-width: 50%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-    }
+.plan-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* 画像の比率を維持 */
+    border-radius: 8px; /* 画像の角を丸くする */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
+}
 
-    .plan-info h2 {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
+.plan-info {
+    flex: 1;
+    max-width: 55%; /* テキスト部分をコンパクトに */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
 
-    .plan-info p {
-        font-size: 16px;
-        margin: 8px 0;
-    }
+.shosai {
+    background-color: #eeeeee; /* 明るいグレー */
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
+    display: flex;
+    flex-direction: column;
+}
 
-    .invite-link {
+.plan-info h2 {
+    font-size: 22px; /* 少し小さめのタイトル */
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #333333; /* 文字色を濃く */
+}
+
+.plan-info p {
+    font-size: 16px; /* フォントサイズを統一 */
+    margin: 6px 0;
+    color: #555555; /* 優しい文字色 */
+}
+
+.invite-link {
     font-size: 16px;
     font-weight: bold;
-    color: #000000; /* Text color */
-    text-decoration: none; /* Remove underline initially */
-    display: inline-flex; /* Flex to align icon next to text */
+    color: #060606; 
+    text-decoration: none; /* 下線を消す */
+    display: inline-flex; /* テキストと矢印を横並びに */
     align-items: center;
-    transition: color 0.3s ease, border-bottom 0.3s ease; /* Smooth transitions */
+    transition: color 0.3s ease, border-bottom 0.3s ease; /* 滑らかな変化 */
 }
 
 .invite-link:hover {
-    color: #454545; /* Darker blue on hover */
-    border-bottom: 2px solid #606060; /* Add underline on hover */
+    color: #555; /* 濃い青に変化 */
+    border-bottom: 2px solid #555; /* ホバー時の下線 */
 }
 
 .invite-link .arrow {
-    margin-left: 8px; /* Space between text and the arrow */
-    font-size: 18px; /* Size of the arrow */
+    margin-left: 8px; /* テキストと矢印の間隔 */
+    font-size: 18px; /* 矢印のサイズ */
     transition: transform 0.3s ease;
 }
 
 .invite-link:hover .arrow {
-    transform: translateX(5px); /* Slight movement of the arrow on hover */
+    transform: translateX(5px); /* ホバー時に矢印を動かす */
 }
+
+
 
 
     

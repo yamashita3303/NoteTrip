@@ -1,6 +1,6 @@
 {% extends "base/base.html" %}
 {% load static %}
-   
+
 {% block body %}
 <div class="checklist">
     <h1>チェックリスト</h1>
@@ -9,15 +9,89 @@
     </a>
     <ul>
         {% for item in items %}
-        <input type="checkbox" {% if item.situation %}checked{% endif %}>
         <li>
-                {{ item.category }}
-
-                {{ item.name }} 
-            
-            {% endfor %}
+            <input type="checkbox" {% if item.situation %}checked{% endif %}>
+            <span>{{ item.category }} - {{ item.name }}</span>
         </li>
+        {% endfor %}
     </ul>
 </div>
-{% endblock %} 
 
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f1f1f1; /* 優しい背景色 */
+        color: #444444; /* 落ち着いた文字色 */
+    }
+
+    .checklist {
+        margin: 120px auto;
+        padding: 20px;
+        max-width: 800px; /* 幅を少し狭める */
+        background-color: #ffffff; /* 白背景 */
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 軽い影 */
+    }
+
+    .checklist h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #888888; /* グレーで統一 */
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    ul li {
+        display: flex;
+        align-items: center; /* チェックボックスとテキストを縦方向で揃える */
+        background-color: #eeeeee; /* 明るいグレー */
+        margin: 10px 0;
+        padding: 12px 15px; /* コンテンツの余白を調整 */
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
+    }
+
+    ul li input[type="checkbox"] {
+        margin-right: 10px; /* チェックボックスとテキスト間のスペース */
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+    }
+
+    ul li:hover {
+        background-color: #dddddd; /* ホバー時の少し濃い背景色 */
+    }
+
+    ul li span {
+        font-size: 16px;
+        color: #444444; /* 中間グレー */
+    }
+
+    .add-item-button {
+        display: block;
+        margin: 0 auto 20px auto; /* ボタンを中央揃え、下に余白を追加 */
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #ffffff; /* 白文字 */
+        background-color: #888888; /* 落ち着いたグレー */
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        text-decoration: none; /* 下線を消す */
+    }
+
+    .add-item-button:hover {
+        background-color: #777777; /* 濃いめのグレー */
+    }
+</style>
+{% endblock %}
