@@ -5,6 +5,22 @@
     <style>
         #map { height: 400px; width: 100%; }
         #controls { margin-bottom: 10px; }
+        #tabs {
+            display: flex;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .tab {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-right: 5px;
+            background-color: #f9f9f9;
+        }
+        .tab.active {
+            background-color: #4285F4;
+            color: white;
+        }
+        #route-details { margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -15,27 +31,36 @@
         <br>
         <label>経由地点:</label>
         <div id="waypoints">
-            <input class="waypoint" type="text" placeholder="経由地 1">
-            <input class="waypoint" type="text" placeholder="経由地 2">
+            {% for address in address_list %}
+            <input class="waypoint" type="text" value="{{ address }}" placeholder="経由地 {{ forloop.counter }}">
+            {% endfor %}
         </div>
         <button onclick="addWaypoint()">経由地を追加</button>
         <button onclick="updateRoute()">ルート更新</button>
     </div>
+    <div id="tabs">
+        <div class="tab active" onclick="switchTab('DRIVING')">車</div>
+        <div class="tab" onclick="switchTab('TRANSIT')">電車・バス</div>
+        <div class="tab" onclick="switchTab('WALKING')">徒歩</div>
+        <div class="tab" onclick="switchTab('BICYCLING')">自転車</div>
+    </div>
+
     <div id="map"></div>
+    <div id="route-details"></div>
 
     <script>
-        let map, directionsService, directionsRenderer, currentPositionMarker;
+        let map, directionsService, directionsRenderer, currentPositionMarker, currentTravelMode = "DRIVING";
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 35.681382, lng: 139.766084 }, // 初期表示は東京駅
+                center: { lat: 35.681382, lng: 139.766084 },
                 zoom: 7,
             });
 
             directionsService = new google.maps.DirectionsService();
             directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
 
-            // 現在地を取得して表示
+            // 現在地を取得
             getCurrentLocation();
         }
 
@@ -43,13 +68,11 @@
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(
                     (position) => {
-                        console.log(position.coords)
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
                         const currentLocation = new google.maps.LatLng(lat, lng);
-                        if (position.coords.accuracy > 1000) return;
 
-                        // 現在地マーカーを更新または作成
+                        // マーカー更新
                         if (!currentPositionMarker) {
                             currentPositionMarker = new google.maps.Marker({
                                 position: currentLocation,
@@ -64,26 +87,20 @@
                                     strokeWeight: 2,
                                 },
                             });
-
-                            // 地図の初期中心を現在地に移動
                             map.setCenter(currentLocation);
-                            map.setZoom(15); // 拡大
+                            map.setZoom(15);
                         } else {
                             currentPositionMarker.setPosition(currentLocation);
                         }
 
-                        // 出発地に現在地を自動設定
+                        // 出発地に現在地を設定
                         document.getElementById("origin").value = `${lat},${lng}`;
                     },
                     (error) => {
-                        console.error("現在地の取得に失敗しました: ", error.message);
+                        console.error("現在地の取得に失敗:", error.message);
                         alert("現在地の取得に失敗しました。");
                     },
-                    {
-                        enableHighAccuracy: true, // 高精度モード
-                        maximumAge: 0,          // キャッシュを使用せず更新
-                        timeout: 20000,         // タイムアウト（10秒）
-                    }
+                    { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }
                 );
             } else {
                 alert("このブラウザでは現在地取得がサポートされていません。");
@@ -99,7 +116,14 @@
             waypointContainer.appendChild(input);
         }
 
-        function updateRoute() {
+        function switchTab(mode) {
+            currentTravelMode = mode;
+            document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+            document.querySelector(`.tab[onclick="switchTab('${mode}')"]`).classList.add("active");
+            updateRoute(mode);
+        }
+
+        function updateRoute(travelMode = currentTravelMode) {
             const origin = document.getElementById("origin").value;
             const destination = document.getElementById("destination").value;
 
@@ -118,17 +142,38 @@
                 origin: origin,
                 destination: destination,
                 waypoints: waypoints,
-                travelMode: google.maps.TravelMode.DRIVING,
+                travelMode: google.maps.TravelMode[travelMode],
             };
 
             directionsService.route(request, (result, status) => {
                 if (status === "OK") {
                     directionsRenderer.setDirections(result);
+                    displayRouteDetails(result.routes[0].legs);
                 } else {
                     alert("ルート検索に失敗しました: " + status);
                 }
             });
         }
+
+        function displayRouteDetails(legs) {
+            const detailsContainer = document.getElementById("route-details");
+            detailsContainer.innerHTML = "<h3>ルート詳細:</h3>";
+
+            legs.forEach((leg, index) => {
+                const legDetails = `
+                    <div>
+                        <h4>区間 ${index + 1}</h4>
+                        <p>出発地: ${leg.start_address}</p>
+                        <p>目的地: ${leg.end_address}</p>
+                        <p>距離: ${leg.distance.text}</p>
+                        <p>所要時間: ${leg.duration.text}</p>
+                    </div>
+                    <hr>
+                `;
+                detailsContainer.innerHTML += legDetails;
+            });
+        }
+
     </script>
 
     <!-- Google Maps APIの非同期ロード -->

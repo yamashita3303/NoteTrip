@@ -650,12 +650,16 @@ logout_view = LogoutView.as_view()
 openai.api_key = os.getenv('API_KEY')
 
 def map(request, plan_id):
+    # Plan と関連する Schedule を取得
     plan = get_object_or_404(Plan, id=plan_id)
-    # Planに紐づくスケジュールの住所リストを取得
-    address = list(Schedule.objects.filter(plan=plan).values_list('address', flat=True))
-    print(address)
+    # スケジュールを開始日と開始時間でソートして取得
+    schedules = Schedule.objects.filter(plan=plan).order_by('start_dt', 'start_at')
+    # 経由地の住所リストを作成
+    address_list = list(schedules.values_list('address', flat=True))
+    print(address_list)
+
     context = {
         'plan': plan,
-        'address': address,  # テンプレートに渡す目的地リスト
+        'address_list': address_list,  # 経由地リストをテンプレートに渡す
     }
     return render(request, 'app/map.html', context)
