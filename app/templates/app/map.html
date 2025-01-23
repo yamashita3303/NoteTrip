@@ -5,20 +5,26 @@
     <style>
         #map { height: 400px; width: 100%; }
         #controls { margin-bottom: 10px; }
-        #tabs {
+        #tabs, #day-tabs {
             display: flex;
             margin-bottom: 10px;
             cursor: pointer;
         }
-        .tab {
+        .tab, .day-tab {
             padding: 10px;
             border: 1px solid #ccc;
             margin-right: 5px;
             background-color: #f9f9f9;
         }
-        .tab.active {
+        .tab.active, .day-tab.active {
             background-color: #4285F4;
             color: white;
+        }
+        .address-list {
+            display: none;
+        }
+        .address-list.active {
+            display: block;
         }
         #route-details { margin-top: 10px; }
     </style>
@@ -30,19 +36,36 @@
         <label>目的地: <input id="destination" type="text" placeholder="例: 京都駅"></label>
         <br>
         <label>経由地点:</label>
-        <div id="waypoints">
-            {% for address in address_list %}
-            <input class="waypoint" type="text" value="{{ address }}" placeholder="経由地 {{ forloop.counter }}">
-            {% endfor %}
-        </div>
+        <div id="waypoints"></div>
         <button onclick="addWaypoint()">経由地を追加</button>
         <button onclick="updateRoute()">ルート更新</button>
     </div>
+
+    <!-- 移動手段のタブ -->
     <div id="tabs">
         <div class="tab active" onclick="switchTab('DRIVING')">車</div>
         <div class="tab" onclick="switchTab('TRANSIT')">電車・バス</div>
         <div class="tab" onclick="switchTab('WALKING')">徒歩</div>
         <div class="tab" onclick="switchTab('BICYCLING')">自転車</div>
+    </div>
+
+    <!-- 日付別タブ -->
+    <div id="day-tabs">
+        {% for day, addresses in day_address_list %}
+        <div class="day-tab {% if forloop.first %}active{% endif %}" 
+             onclick="switchDay('{{ day }}')">{{ day }}日目</div>
+        {% endfor %}
+    </div>
+
+    <!-- 日付ごとの住所リスト -->
+    <div id="addresses">
+        {% for day, addresses in day_address_list %}
+        <div class="address-list {% if forloop.first %}active{% endif %}" id="addresses-{{ day }}">
+            {% for address in addresses %}
+            <input class="waypoint" type="text" value="{{ address }}" placeholder="経由地 {{ forloop.counter }}">
+            {% endfor %}
+        </div>
+        {% endfor %}
     </div>
 
     <div id="map"></div>
@@ -60,7 +83,6 @@
             directionsService = new google.maps.DirectionsService();
             directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
 
-            // 現在地を取得
             getCurrentLocation();
         }
 
@@ -72,7 +94,6 @@
                         const lng = position.coords.longitude;
                         const currentLocation = new google.maps.LatLng(lat, lng);
 
-                        // マーカー更新
                         if (!currentPositionMarker) {
                             currentPositionMarker = new google.maps.Marker({
                                 position: currentLocation,
@@ -93,7 +114,6 @@
                             currentPositionMarker.setPosition(currentLocation);
                         }
 
-                        // 出発地に現在地を設定
                         document.getElementById("origin").value = `${lat},${lng}`;
                     },
                     (error) => {
@@ -108,7 +128,7 @@
         }
 
         function addWaypoint() {
-            const waypointContainer = document.getElementById("waypoints");
+            const waypointContainer = document.querySelector(".address-list.active");
             const input = document.createElement("input");
             input.type = "text";
             input.className = "waypoint";
@@ -123,6 +143,14 @@
             updateRoute(mode);
         }
 
+        function switchDay(day) {
+            document.querySelectorAll(".day-tab").forEach(tab => tab.classList.remove("active"));
+            document.querySelector(`[onclick="switchDay('${day}')"]`).classList.add("active");
+
+            document.querySelectorAll(".address-list").forEach(list => list.classList.remove("active"));
+            document.getElementById(`addresses-${day}`).classList.add("active");
+        }
+
         function updateRoute(travelMode = currentTravelMode) {
             const origin = document.getElementById("origin").value;
             const destination = document.getElementById("destination").value;
@@ -132,7 +160,7 @@
                 return;
             }
 
-            const waypointInputs = document.querySelectorAll(".waypoint");
+            const waypointInputs = document.querySelector(".address-list.active").querySelectorAll(".waypoint");
             const waypoints = Array.from(waypointInputs)
                 .map(input => input.value)
                 .filter(value => value.trim() !== "")
@@ -150,7 +178,11 @@
                     directionsRenderer.setDirections(result);
                     displayRouteDetails(result.routes[0].legs);
                 } else {
-                    alert("ルート検索に失敗しました: " + status);
+                    if (travelMode === "TRANSIT") {
+                        alert("電車・バスには対応していません。別の移動手段を選択してください。");
+                    } else {
+                        alert("ルート検索に失敗しました: " + status);
+                    }
                 }
             });
         }
@@ -173,10 +205,8 @@
                 detailsContainer.innerHTML += legDetails;
             });
         }
-
     </script>
 
-    <!-- Google Maps APIの非同期ロード -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEP5Fu9ChgnN4H4AX872QLG5529wbSJSo&callback=initMap" async defer></script>
 </body>
 </html>
