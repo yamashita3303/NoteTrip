@@ -670,11 +670,7 @@ def checklist_view(request, plan_id):
     return render(request, 'app/checklist.html', context)
 
 
-<<<<<<< HEAD
 # チェックリスト追加
-=======
-
->>>>>>> 0019c1116c5e49de088d7c19ac755cd6f1750ab5
 def add_item_view(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)
     if request.method == 'POST':
