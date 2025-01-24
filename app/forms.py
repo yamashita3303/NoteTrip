@@ -81,4 +81,8 @@ class Scheduleform(forms.ModelForm):
 class ChecklistForm(forms.ModelForm):
     class Meta:
         model = Checklist
-        fields = ['name', 'category', 'situation']
+        fields = ['name', 'category']
+        labels = {
+            'name' : '名前',
+            'category' : 'カテゴリ',
+        }

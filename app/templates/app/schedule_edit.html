@@ -1,16 +1,100 @@
 {% extends "base/base.html" %}
 {% load static %}
-   
+
 {% block extra_styles %}
 <link rel="stylesheet" href="{% static 'app/css/schedule.css' %}">
 {% endblock %}
 
 {% block body %}
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    h1 {
+        font-size: 20px; /* 小さく調整 */
+        color: #444;
+        text-align: center;
+        margin-bottom: 20px; /* 間隔調整 */
+    }
+
+    form {
+        max-width: 600px; /* 幅を少し小さく */
+        margin: 30px auto; /* 上下の余白調整 */
+        padding: 15px; /* パディング調整 */
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    form label {
+        font-size: 14px; /* フォントサイズを小さく */
+        color: #444;
+        display: block;
+        margin-bottom: 8px; /* 間隔調整 */
+    }
+
+    form input, form select, form textarea {
+        width: 100%;
+        padding: 10px; /* パディング調整 */
+        margin-bottom: 15px; /* マージン調整 */
+        font-size: 14px; /* フォントサイズを小さく */
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background-color: #f8f9fa;
+    }
+
+    form input:focus, form select:focus, form textarea:focus {
+        border-color: #007bff;
+        background-color: #ffffff;
+        outline: none;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px; /* フォントサイズを小さく */
+        color: #ffffff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    a {
+        display: inline-block;
+        margin-top: 15px; /* 上の余白調整 */
+        font-size: 14px; /* フォントサイズを小さく */
+        color: #007bff;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        text-align: center;
+    }
+
+    a:hover {
+        color: #0056b3;
+    }
+
+</style>
+
 <h1>{{ schedule.title }} 編集</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">保存</button>
 </form>
+
 <a href="{% url 'schedule' plan.id|default:1 %}">戻る</a>
 {% endblock %}
