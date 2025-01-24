@@ -317,7 +317,11 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
                 <li><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'logout' %}">Logout</a></li>
                 <li><a href="{% url 'application' %}">Contact</a></li>
-                <li><a href="{% url 'add_spot' applicant_id=applicant_id %}">Add spots</a>
+                {% if applicant_id %}
+                    <li><a href="{% url 'add_spot' applicant_id=applicant_id %}">Add spots</a></li>
+                {% else %}
+                    <li><span>申請後にスポットを追加できます</span></li>
+                {% endif %}
             </ul>
         </div>
     

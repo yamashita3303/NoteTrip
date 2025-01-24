@@ -23,6 +23,7 @@ urlpatterns = [
     path('application/reject/<int:application_id>/', views.reject_application, name='reject_application'),
     path('application/delete/<int:application_id>/', views.delete_application, name='delete_application'),
     path('application/form/<int:applicant_id>/', views.add_spot, name='add_spot'),
+    path('application/form/new/', views.add_spot, name='add_spot_new'),  # new用のURLパターン
     path('application/form/confirmation/<int:applicant_id>', views.add_spot_confirmation, name='add_spot_confirmation'),
     path('application/form/success/<int:applicant_id>', views.add_spot_success, name='add_spot_success'),
     path('spot/delete/<int:spot_id>/', views.delete_spot, name='delete_spot'),

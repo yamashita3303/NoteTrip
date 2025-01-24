@@ -43,7 +43,7 @@ def homeView(request):
     print("申請がない、または未承認です。")
     return render(request, 'app/home.html', {
         'user_application': user_application,
-        'applicant_id': None,  # デフォルト値としてNoneを渡す
+        'applicant_id': 'new',  # デフォルト値を設定
     })
 
 # ログインビュー
@@ -286,12 +286,15 @@ def delete_application(request, application_id):
 
 
 # おすすめスポット追加ビュー
-def add_spot(request, applicant_id):
+def add_spot(request, applicant_id=None):
     print(f"おすすめスポット追加ビューが呼ばれました (Applicant ID: {applicant_id})")
+    if applicant_id is None:
+        messages.error(request, "申請者IDが不明です。最初に申請を行ってください。")
+        return redirect('home')
+
     if request.method == 'POST':
         form = SpotForm(request.POST)
         if form.is_valid():
-            # データを一時的にセッションに保存し、確認画面へ
             print("フォームデータが有効です。セッションに保存します。")
             request.session['spot_data'] = form.cleaned_data
             return redirect('add_spot_confirmation', applicant_id=applicant_id)
@@ -299,40 +302,58 @@ def add_spot(request, applicant_id):
             print("フォームにエラーがあります。")
     else:
         form = SpotForm()
+
     return render(request, 'app/application_form.html', {'form': form, 'applicant_id': applicant_id})
 
 # おすすめスポット登録内容確認ビュー
-def add_spot_confirmation(request, applicant_id):
+def add_spot_confirmation(request, applicant_id=None):
     print("スポット登録確認ビューが呼ばれました")
+    if applicant_id is None:
+        messages.error(request, "申請者IDが不明です。")
+        return redirect('home')
+
     spot_data = request.session.get('spot_data')
     if not spot_data:
         print("セッションにスポットデータがありません。リダイレクトします。")
-        return redirect('add_spot')
+        messages.error(request, "セッションが切れたか、データがありません。")
+        return redirect('add_spot', applicant_id=applicant_id)
 
-    form = SpotForm(initial=spot_data)
     if request.method == 'POST':
         form = SpotForm(spot_data)
         if form.is_valid():
-            print("スポットデータが有効です。保存します。")
             form.save()
+            del request.session['spot_data']  # 登録後にセッションデータを削除
             messages.success(request, 'スポットが登録されました！')
             return redirect('add_spot_success', applicant_id=applicant_id)
         else:
             print("フォームにエラーがあります。")
+    else:
+        form = SpotForm(initial=spot_data)
+
     return render(request, 'app/application_form_confirmation.html', {'form': form, 'applicant_id': applicant_id})
 
 # おすすめスポット登録完了ビュー
 def add_spot_success(request, applicant_id=None):
     print("おすすめスポット登録完了ビューが呼ばれました")
+
+    if applicant_id is None:
+        messages.warning(request, "申請者IDが見つかりませんでした。")
+        return redirect('home')
+
     context = {'applicant_id': applicant_id}
     return render(request, 'app/application_form_success.html', context)
 
 # おすすめスポット削除ビュー
+@login_required
 def delete_spot(request, spot_id):
     spot = get_object_or_404(Spot, id=spot_id)
-    # 削除処理
+
+    if spot.user != request.user:
+        messages.error(request, "このスポットを削除する権限がありません。")
+        return redirect('dashboard')
+
     spot.delete()
-    # 削除後にリダイレクト
+    messages.success(request, "スポットが削除されました。")
     return redirect('dashboard')
 
 # プラン作成
