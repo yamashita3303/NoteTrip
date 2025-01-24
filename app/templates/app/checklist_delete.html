@@ -1,0 +1,76 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block body %}
+<div class="confirm-delete">
+    <h1>削除確認</h1>
+    <p>本当に以下のアイテムを削除しますか？</p>
+    <p><strong>{{ item.name }}</strong></p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="confirm-button">削除</button>
+        <a href="{% url 'checklist' plan.id %}" class="cancel-button">キャンセル</a>
+    </form>
+</div>
+
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+        color: #444444;
+    }
+
+    .confirm-delete {
+        margin: 120px auto;
+        padding: 20px;
+        max-width: 500px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .confirm-delete h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #ff4d4d;
+        margin-bottom: 20px;
+    }
+
+    .confirm-delete p {
+        font-size: 16px;
+        margin: 10px 0;
+    }
+
+    .confirm-button {
+        padding: 10px 20px;
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .confirm-button:hover {
+        background-color: #ff1a1a;
+    }
+
+    .cancel-button {
+        display: inline-block;
+        margin-left: 20px;
+        padding: 10px 20px;
+        background-color: #888888;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .cancel-button:hover {
+        background-color: #777777;
+    }
+</style>
+{% endblock %}

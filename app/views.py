@@ -18,6 +18,11 @@ from django.db.models import Q
 from django.conf import settings
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponseForbidden
+from .models import Checklist
+from django.template.defaultfilters import capfirst
+
 
 # ホームビュー
 @login_required
@@ -605,18 +610,36 @@ def schedule_delete(request, plan_id, schedule_id):
         return redirect('schedule', plan_id=plan_id)  # インデックスページにリダイレクト
     return render(request, 'app/schedule_delete.html', {'plan': plan, 'schedule': schedule})
 
-
+# チェックリストビュー
 def checklist_view(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)
-    items = Checklist.objects.all()
     
+    if request.method == 'POST':
+        # チェックリストのアイテムを更新
+        for item_id, checked in request.POST.items():
+            if item_id.startswith('item_'):  # item_ で始まるフォームフィールドを対象にする
+                item_id = item_id.split('_')[1]  # item_id を取得
+                item = get_object_or_404(Checklist, id=item_id, plan=plan)
+                item.situation = checked == 'on'  # チェックボックスがオンならTrueに
+                item.save()
+
+        return redirect('checklist', plan_id=plan_id)  # 更新後にリダイレクト
+
+    # GETリクエスト時はアイテムをそのまま表示
+    items_by_category = {}
+    for item in Checklist.objects.filter(plan=plan):
+        if item.category not in items_by_category:
+            items_by_category[item.category] = []
+        items_by_category[item.category].append(item)
+
     context = {
         'plan': plan,
-        'items': items
+        'items_by_category': items_by_category
     }
-
     return render(request, 'app/checklist.html', context)
 
+
+# チェックリスト追加
 def add_item_view(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)
     if request.method == 'POST':
@@ -630,8 +653,24 @@ def add_item_view(request, plan_id):
         form = ChecklistForm()
     return render(request, 'app/add_item.html', {'plan': plan, 'form': form})
 
+# チェックリスト削除
+def delete_item_view(request, plan_id, item_id):
+    # plan_id と item_id で対象アイテムを取得
+    plan = get_object_or_404(Plan, id=plan_id)
+    item = get_object_or_404(Checklist, id=item_id, plan=plan)
+
+    # POSTリクエストで削除を行う
+    if request.method == 'POST':
+        item.delete()  # アイテムを削除
+        return redirect('checklist', plan_id=plan_id)  # チェックリストページにリダイレクト
+    
+    # GETリクエストの場合、削除確認ページなどを表示することも可能
+    return render(request, 'app/checklist_delete.html', {'plan': plan, 'item': item})
+
+
 def top(request):
     return render(request, 'app/top.html')
+
 
 class LogoutView(View):
 

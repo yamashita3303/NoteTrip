@@ -159,7 +159,11 @@ class Checklist(models.Model):
 
     name = models.CharField(max_length=30)
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
-    situation = models.BooleanField(default=False)
+    situation = models.BooleanField(default=False) # チェック状態
 
     def __str__(self):
         return self.name
+
+    def category_display(self):
+        # カテゴリコードを日本語のカテゴリ名に変換
+        return dict(self.CATEGORY_CHOICES).get(self.category, self.category)

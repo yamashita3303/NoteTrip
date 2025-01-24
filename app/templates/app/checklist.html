@@ -7,14 +7,34 @@
     <a href="{% url 'add_item' plan.id %}">
         <button class="add-item-button">アイテムを追加</button>
     </a>
-    <ul>
-        {% for item in items %}
-        <li>
-            <input type="checkbox" {% if item.situation %}checked{% endif %}>
-            <span>{{ item.category }} - {{ item.name }}</span>
-        </li>
+
+    <!-- フォームを追加 -->
+    <form method="POST">
+        {% csrf_token %}
+        {% for category, items in items_by_category.items %}
+        <h2>{{ category|capfirst }}</h2> <!-- カテゴリ名を1回だけ表示 -->
+        <ul style="list-style: none; padding-left: 0;"> <!-- マーカーを消すスタイル -->
+            {% for item in items %}
+            <li>
+                <label>
+                    <!-- チェックボックスを生成 -->
+                    <input 
+                        type="checkbox" 
+                        name="item_{{ item.id }}" 
+                        {% if item.situation %}checked{% endif %}>
+                    {{ item.name }}
+                </label>
+
+                <!-- 削除ボタンを右寄せにするフォーム -->
+                <form action="{% url 'delete_item' plan.id item.id %}" method="GET" class="delete-item-form">
+                    <button type="submit" class="delete-item-button">削除</button>
+                </form>            
+            </li>
+            {% endfor %}
+        </ul>
         {% endfor %}
-    </ul>
+        <button type="submit" class="update-checklist-button">チェックリストを更新</button>
+    </form>
 </div>
 
 <style>
@@ -22,23 +42,23 @@
         font-family: 'Roboto', sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f1f1f1; /* 優しい背景色 */
-        color: #444444; /* 落ち着いた文字色 */
+        background-color: #f1f1f1;
+        color: #444444;
     }
 
     .checklist {
         margin: 120px auto;
         padding: 20px;
-        max-width: 800px; /* 幅を少し狭める */
-        background-color: #ffffff; /* 白背景 */
+        max-width: 800px;
+        background-color: #ffffff;
         border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 軽い影 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .checklist h1 {
         font-size: 24px;
         font-weight: bold;
-        color: #888888; /* グレーで統一 */
+        color: #888888;
         text-align: center;
         margin-bottom: 20px;
     }
@@ -49,49 +69,101 @@
         margin: 0;
     }
 
+    ul {
+        list-style: none; /* デフォルトのリストマーカーを無効化 */
+        padding-left: 0; /* 左の余白を削除 */
+    }
+
+    li {
+        margin-bottom: 10px; /* リスト項目の間隔を調整 */
+    }
+
     ul li {
         display: flex;
-        align-items: center; /* チェックボックスとテキストを縦方向で揃える */
-        background-color: #eeeeee; /* 明るいグレー */
+        align-items: center;
+        background-color: #eeeeee;
         margin: 10px 0;
-        padding: 12px 15px; /* コンテンツの余白を調整 */
+        padding: 12px 15px;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        justify-content: space-between;
+    }
+
+    ul li label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     ul li input[type="checkbox"] {
-        margin-right: 10px; /* チェックボックスとテキスト間のスペース */
         cursor: pointer;
         width: 18px;
         height: 18px;
     }
 
     ul li:hover {
-        background-color: #dddddd; /* ホバー時の少し濃い背景色 */
+        background-color: #dddddd;
     }
 
     ul li span {
         font-size: 16px;
-        color: #444444; /* 中間グレー */
+        color: #444444;
     }
 
     .add-item-button {
         display: block;
-        margin: 0 auto 20px auto; /* ボタンを中央揃え、下に余白を追加 */
+        margin: 0 auto 20px auto;
         padding: 10px 20px;
         font-size: 16px;
         font-weight: bold;
-        color: #ffffff; /* 白文字 */
-        background-color: #888888; /* 落ち着いたグレー */
+        color: #ffffff;
+        background-color: #888888;
         border: none;
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.3s;
-        text-decoration: none; /* 下線を消す */
+        text-decoration: none;
     }
 
     .add-item-button:hover {
-        background-color: #777777; /* 濃いめのグレー */
+        background-color: #777777;
     }
+
+    .update-checklist-button {
+        display: block;
+        margin: 20px auto 0;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #ffffff;
+        background-color: #505050;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .update-checklist-button:hover {
+        background-color: #404040;
+    }
+
+    .delete-item-form {
+        margin: 0;
+        text-align: right;
+    }
+
+    .delete-item-button {
+        padding: 5px 10px;
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .delete-item-button:hover {
+        background-color: #ff1a1a;
+    }
+    
 </style>
 {% endblock %}
