@@ -13,6 +13,7 @@ body {
     background-color: #ffffff; /* 白背景 */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 軽い影 */
     border-radius: 8px;
+    margin-top: 120px;
 }
 
 .tab {
@@ -51,16 +52,62 @@ body {
     color: #ffffff; /* 白文字 */
 }
 
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.schedule-header h3 {
+    color: #888888; /* グレーで統一 */
+    margin: 0;
+}
+
+.schedule-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-btn, .delete-btn {
+    text-decoration: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.edit-btn {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: #ffffff;
+    border: none;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
 h3 {
     color: #888888; /* グレーで統一 */
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    margin-top: 20px;
 }
 
 ul li {
@@ -99,10 +146,11 @@ ul li span {
     font-weight: bold;
     color: #ffffff; /* 白文字 */
     background-color: #888888; /* 落ち着いたグレー */
-    border: none;
+    border: none; /* ボーダーを消す */
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
+    text-decoration: none; /* 下線を消す */
 }
 
 .add-schedule-btn:hover {
