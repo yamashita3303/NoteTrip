@@ -41,8 +41,9 @@
     {% endif %}
 
     <!-- スケジュール追加ボタン -->
-    <a href="{% url 'schedule_create' plan_id=plan.id day=select_day %}">
+    <a href="{% url 'schedule_create' plan_id=plan.id day=select_day %}" style="text-decoration: none;">
         <button class="add-schedule-btn">{{ select_day }}日目のスケジュールを追加する</button>
     </a>
+    
 </div>
 {% endblock %}

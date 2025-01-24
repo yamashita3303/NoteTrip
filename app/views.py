@@ -584,6 +584,8 @@ def schedule_create(request, plan_id, day):
             schedule.save()
             print(f"Schedule saved with day: {schedule.day}")  # デバッグ用
             return redirect('schedule', plan_id=plan_id)
+           
+            
     else:
         form = Scheduleform()
     return render(request, 'app/schedule_form.html', {'form': form})
@@ -599,7 +601,15 @@ def schedule_edit(request, plan_id, schedule_id):
             return redirect('schedule', plan_id=plan_id)
     else:
         form = Scheduleform(instance=schedule)
-    return render(request, 'app/schedule_edit.html', {'form': form, 'plan': plan, 'schedule': schedule})
+    return render(request, 'app/schedule_edit.html',  {'form': form, 'plan': plan, 'schedule': schedule})
+
+#スケジュール削除確認画面
+def schedule_kakunin(request, plan_id, schedule_id):
+    # スケジュールを取得
+    schedule = get_object_or_404(Schedule, id=schedule_id, plan_id=plan_id)
+    
+    # テンプレートにスケジュールを渡してレンダリング
+    return render(request, 'app/schedule_kakunin.html', {'schedule': schedule})
 
 # スケジュール削除
 def schedule_delete(request, plan_id, schedule_id):
@@ -639,7 +649,11 @@ def checklist_view(request, plan_id):
     return render(request, 'app/checklist.html', context)
 
 
+<<<<<<< HEAD
 # チェックリスト追加
+=======
+
+>>>>>>> 0019c1116c5e49de088d7c19ac755cd6f1750ab5
 def add_item_view(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)
     if request.method == 'POST':
