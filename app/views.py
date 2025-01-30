@@ -676,11 +676,18 @@ def map(request, plan_id):
     print("Address List:", address_list)
     print("Day List:", day_list)
     print("Day Address List:", day_address_list)
+
+    import json
+
+    spots = Spot.objects.values("name", "address")
+    spots_json = json.dumps(list(spots))
+
     
     context = {
         'plan': plan,
         'address_list': address_list,  # 経由地リストをテンプレートに渡す
         'day_address_list': day_address_list,  # 日付別の住所リストをテンプレートに渡す
+        'spots_json': spots_json,
     }
     
     return render(request, 'app/map.html', context)

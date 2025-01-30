@@ -1,34 +1,53 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>複数地点のリアルタイムルート更新</title>
     <style>
-        #map { height: 400px; width: 100%; }
-        #controls { margin-bottom: 10px; }
-        #tabs, #day-tabs {
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+
+        #controls {
+            margin-bottom: 10px;
+        }
+
+        #tabs,
+        #day-tabs {
             display: flex;
             margin-bottom: 10px;
             cursor: pointer;
         }
-        .tab, .day-tab {
+
+        .tab,
+        .day-tab {
             padding: 10px;
             border: 1px solid #ccc;
             margin-right: 5px;
             background-color: #f9f9f9;
         }
-        .tab.active, .day-tab.active {
+
+        .tab.active,
+        .day-tab.active {
             background-color: #4285F4;
             color: white;
         }
+
         .address-list {
             display: none;
         }
+
         .address-list.active {
             display: block;
         }
-        #route-details { margin-top: 10px; }
+
+        #route-details {
+            margin-top: 10px;
+        }
     </style>
 </head>
+
 <body>
     <div id="controls">
         <label>出発地: <input id="origin" type="text" placeholder="例: 東京駅"></label>
@@ -47,13 +66,13 @@
         <div class="tab" onclick="switchTab('TRANSIT')">電車・バス</div>
         <div class="tab" onclick="switchTab('WALKING')">徒歩</div>
         <div class="tab" onclick="switchTab('BICYCLING')">自転車</div>
+        <div class="tab" onclick="showNearbySpots()">おすすめスポット</div>
     </div>
 
     <!-- 日付別タブ -->
     <div id="day-tabs">
         {% for day, addresses in day_address_list %}
-        <div class="day-tab {% if forloop.first %}active{% endif %}" 
-             onclick="switchDay('{{ day }}')">{{ day }}日目</div>
+        <div class="day-tab {% if forloop.first %}active{% endif %}" onclick="switchDay('{{ day }}')">{{ day }}日目</div>
         {% endfor %}
     </div>
 
@@ -72,7 +91,7 @@
     <div id="route-details"></div>
 
     <script>
-        let map, directionsService, directionsRenderer, currentPositionMarker, currentTravelMode = "DRIVING";
+        let map, currentLocation, directionsService, directionsRenderer, currentPositionMarker, currentTravelMode = "DRIVING";
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
@@ -92,7 +111,7 @@
                     (position) => {
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
-                        const currentLocation = new google.maps.LatLng(lat, lng);
+                        currentLocation = new google.maps.LatLng(lat, lng);
 
                         if (!currentPositionMarker) {
                             currentPositionMarker = new google.maps.Marker({
@@ -113,6 +132,8 @@
                         } else {
                             currentPositionMarker.setPosition(currentLocation);
                         }
+
+                        showNearbySpots();
 
                         document.getElementById("origin").value = `${lat},${lng}`;
                     },
@@ -205,8 +226,107 @@
                 detailsContainer.innerHTML += legDetails;
             });
         }
+
+        let spotMarkers = [];
+
+        function showNearbySpots() {
+            console.log("おすすめスポットボタンが押された"); // デバッグ
+            if (!navigator.geolocation) {
+                alert("現在地の取得がサポートされていません。");
+                return;
+            }
+
+            const spots = JSON.parse('{{ spots_json|escapejs }}');
+            const geocoder = new google.maps.Geocoder();
+            let nearbySpots = [];
+            let processedCount = 0;
+            spots.forEach(spot => {
+                geocoder.geocode({ address: spot.address }, function (results, status) {
+                    processedCount++;
+                    console.log(`スポット: ${spot.name}, ステータス: ${status}`);
+
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        const spotLocation = results[0].geometry.location;
+                        const distance = google.maps.geometry.spherical.computeDistanceBetween(currentLocation, spotLocation);
+
+                        if (distance <= 2000) {
+                            nearbySpots.push({
+                                name: spot.name,
+                                location: spotLocation
+                            });
+                        }
+                    }
+
+                    if (processedCount === spots.length) {
+                        displayNearbySpots(nearbySpots);
+                    }
+                });
+            });
+            // navigator.geolocation.getCurrentPosition(position => {
+            //     const lat = position.coords.latitude;
+            //     const lng = position.coords.longitude;
+            //     const currentLocation = new google.maps.LatLng(lat, lng);
+            //     console.log("現在地取得成功:", lat, lng);
+
+            //     const spots = JSON.parse('{{ spots_json|escapejs }}');
+            //     const geocoder = new google.maps.Geocoder();
+            //     let nearbySpots = [];
+            //     let processedCount = 0;
+
+            //     spots.forEach(spot => {
+            //         geocoder.geocode({ address: spot.address }, function(results, status) {
+            //             processedCount++;
+            //             console.log(`スポット: ${spot.name}, ステータス: ${status}`);
+
+            //             if (status === google.maps.GeocoderStatus.OK) {
+            //                 const spotLocation = results[0].geometry.location;
+            //                 const distance = google.maps.geometry.spherical.computeDistanceBetween(currentLocation, spotLocation);
+
+            //                 if (distance <= 2000) {
+            //                     nearbySpots.push({
+            //                         name: spot.name,
+            //                         location: spotLocation
+            //                     });
+            //                 }
+            //             }
+
+            //             if (processedCount === spots.length) {
+            //                 displayNearbySpots(nearbySpots);
+            //             }
+            //         });
+            //     });
+            // }, error => {
+            //     console.error("現在地の取得に失敗:", error.message);
+            //     alert("現在地の取得に失敗しました。");
+            // }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
+        }
+
+        function displayNearbySpots(nearbySpots) {
+            spotMarkers.forEach(marker => marker.setMap(null));
+            spotMarkers = [];
+
+            if (nearbySpots.length === 0) {
+                alert("近くにおすすめスポットがありません。");
+                return;
+            }
+
+            nearbySpots.forEach(spot => {
+                const marker = new google.maps.Marker({
+                    position: spot.location,
+                    map: map,
+                    title: spot.name
+                });
+                spotMarkers.push(marker);
+            });
+
+            console.log("おすすめスポット表示完了");
+        }
+
     </script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEP5Fu9ChgnN4H4AX872QLG5529wbSJSo&callback=initMap" async defer></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEP5Fu9ChgnN4H4AX872QLG5529wbSJSo&callback=initMap&libraries=geometry"
+        async defer></script>
 </body>
+
 </html>
