@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ spot.name }} の詳細</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <h1>{{ spot.name }} の詳細</h1>
+    </header>
+    <main>
+        <div class="spot-detail">
+            <img src="{{ spot.image.url }}" alt="{{ spot.name }}" class="spot-image">
+            <div class="spot-info">
+                <p><strong>住所:</strong> {{ spot.address }}</p>
+                <p><strong>説明:</strong> {{ spot.description }}</p>
+                <p><strong>登録者:</strong> {{ spot.user.username }}</p>
+                <p><strong>登録日:</strong> {{ spot.created_at|date:"Y/m/d H:i" }}</p>
+            </div>
+        </div>
+        <div class="action-buttons">
+            <a href="{% url 'edit_spot' spot.id %}" class="edit"><i class="fas fa-edit"></i></a>
+            <a href="{% url 'delete_spot' spot.id %}" class="delete" onclick="return confirm('本当に削除しますか？');"><i class="fas fa-trash"></i></a>
+            <a href="{% url 'my_spots' %}" class="back"><i class="fas fa-arrow-left"></i></a>
+        </div>
+    </main>
+</body>
+</html>

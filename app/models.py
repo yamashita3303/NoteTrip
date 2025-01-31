@@ -37,12 +37,8 @@ class Application(models.Model):
     organization = models.CharField(max_length=100)
     position = models.CharField(max_length=100)
     relationship_proof = models.TextField()
-    @property
-    def content(self):
-        # ここで申請内容を計算して返す
-        return f"申請者: {self.sei} {self.mei}, 団体名: {self.organization}, 証明: {self.relationship_proof}"
-    
     created_at = models.DateTimeField(auto_now_add=True)
+    
     # 申請の状態
     PENDING = 'pending'
     APPROVED = 'approved'
@@ -54,7 +50,6 @@ class Application(models.Model):
     ]
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
     applicant = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='applications')
-    list_display = ('applicant', 'organization', 'status', 'created_at')
 
     def approve(self):
         self.status = 'approved'
@@ -77,8 +72,9 @@ class Application(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        if self.pk:
+        if self.pk:  # 既存のインスタンスの場合
             previous = Application.objects.get(pk=self.pk)
+            # 変更されたstatusが異なる場合にのみ通知を送信
             if previous.status != self.status:
                 self.send_notification()
         super().save(*args, **kwargs)
@@ -90,6 +86,7 @@ class Spot(models.Model):
         ('カフェ', 'カフェ'),
         ('自然スポット', '自然スポット'),
     ]
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
     name = models.CharField(max_length=100, verbose_name="スポット名")
     address = models.CharField(max_length=200, verbose_name="住所")
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, verbose_name="カテゴリー")

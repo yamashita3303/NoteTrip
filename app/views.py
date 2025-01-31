@@ -324,10 +324,19 @@ def add_spot_confirmation(request, applicant_id=None):
         return redirect('add_spot', applicant_id=applicant_id)
 
     if request.method == 'POST':
-        form = SpotForm(spot_data)
+        form = SpotForm(spot_data)  # フォームにセッションデータをセット
         if form.is_valid():
-            form.save()
-            del request.session['spot_data']  # 登録後にセッションデータを削除
+            spot = form.save(commit=False)  # まだ保存しない
+            
+            # `request.user` がログイン済みなら `user_id` をセット
+            if request.user.is_authenticated:
+                spot.user = request.user  # ユーザーをセット
+            else:
+                messages.error(request, "ログインが必要です。")
+                return redirect('login')  # ログインページへリダイレクト
+
+            spot.save()  # ここで保存
+            del request.session['spot_data']  # セッションデータ削除
             messages.success(request, 'スポットが登録されました！')
             return redirect('add_spot_success', applicant_id=applicant_id)
         else:
@@ -336,6 +345,37 @@ def add_spot_confirmation(request, applicant_id=None):
         form = SpotForm(initial=spot_data)
 
     return render(request, 'app/application_form_confirmation.html', {'form': form, 'applicant_id': applicant_id})
+
+# おすすめスポット一覧
+def spot_detail(request, spot_id):
+    spot = get_object_or_404(Spot, id=spot_id)
+    return render(request, 'app/spot_detail.html', {'spot': spot})
+
+# おすすめスポット編集
+def edit_spot(request, spot_id):
+    # 対象となるSpotオブジェクトを取得
+    spot = get_object_or_404(Spot, id=spot_id)
+
+    # フォームにSpotオブジェクトを渡してインスタンス化
+    if request.method == 'POST':
+        form = SpotForm(request.POST, instance=spot)
+        if form.is_valid():
+            form.save()  # 編集内容を保存
+            return redirect('my_spots')  # 登録したスポット一覧へリダイレクト
+    else:
+        form = SpotForm(instance=spot)  # GETリクエスト時はフォームを表示（データを渡す）
+
+    return render(request, 'app/edit_spot.html', {'form': form, 'spot': spot})
+
+# おすすめスポット削除
+def remove_spot(request, spot_id):
+    try:
+        spot = Spot.objects.get(id=spot_id)
+        spot.delete()
+        messages.success(request, 'スポットが削除されました！')
+    except Spot.DoesNotExist:
+        messages.error(request, 'そのスポットは存在しません。')
+    return redirect('my_spots')
 
 # おすすめスポット登録完了ビュー
 def add_spot_success(request, applicant_id=None):
@@ -360,6 +400,12 @@ def delete_spot(request, spot_id):
     spot.delete()
     messages.success(request, "スポットが削除されました。")
     return redirect('dashboard')
+
+@login_required
+def my_spots(request):
+    # 現在のユーザーのスポットのみ取得
+    spots = Spot.objects.filter(user=request.user)
+    return render(request, 'app/my_spots.html', {'spots': spots})
 
 # プラン作成
 @login_required
