@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スポット編集</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">スポット編集</h1>
+
+        <!-- エラーメッセージ表示 -->
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <p>入力に誤りがあります。</p>
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_name">スポット名</label>
+                {{ form.name }}  <!-- スポット名のフォームフィールド -->
+            </div>
+
+            <div class="form-group">
+                <label for="id_address">住所</label>
+                {{ form.address }}  <!-- 住所のフォームフィールド -->
+            </div>
+
+            <div class="form-group">
+                <label for="id_category">カテゴリ</label>
+                {{ form.category }}  <!-- カテゴリのフォームフィールド -->
+            </div>
+
+            <div class="form-group">
+                <label for="id_opening_hours">営業時間</label>
+                {{ form.opening_hours }}  <!-- 営業時間のフォームフィールド -->
+            </div>
+
+            <div class="form-group">
+                <label for="id_price">料金</label>
+                {{ form.price }}  <!-- 料金のフォームフィールド -->
+            </div>
+
+            <div class="form-group">
+                <label for="id_rating">評価</label>
+                {{ form.rating }}  <!-- 評価のフォームフィールド -->
+            </div>
+
+            <div class="form-group">
+                <label for="id_notes">備考</label>
+                {{ form.notes }}  <!-- 備考のフォームフィールド -->
+            </div>
+
+            <button type="submit" class="btn btn-success">変更を保存</button>
+        </form>
+        <!-- 一覧に戻るボタン -->
+        <a href="{% url 'my_spots' %}" class="btn btn-primary">一覧に戻る</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

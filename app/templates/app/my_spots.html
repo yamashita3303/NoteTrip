@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>おすすめスポット一覧</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <h1 class="text-center mb-4">おすすめスポット一覧</h1>
+
+  <!-- タブを中央揃え -->
+  <ul class="nav nav-tabs justify-content-center" id="mySpotsTabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="spots-tab" data-toggle="tab" href="#spots" role="tab" aria-controls="spots" aria-selected="true">おすすめスポット</a>
+    </li>
+  </ul>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <!-- メッセージ表示エリア -->
+      <div>
+        {% if messages %}
+          <div class="alert alert-info">
+            {% for message in messages %}
+              <p>{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="tab-content mt-4" id="mySpotsTabsContent">
+        <!-- おすすめスポット一覧タブのコンテンツ -->
+        <div class="tab-pane fade show active" id="spots" role="tabpanel" aria-labelledby="spots-tab">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>スポット名</th>
+                <th>詳細</th>
+                <th>評価</th>
+                <th>操作</th>  <!-- 編集・削除用の列を追加 -->
+              </tr>
+            </thead>
+            <tbody>
+              {% for spot in spots %}
+              <tr>
+                <td>{{ spot.name }}</td>
+                <td>{{ spot.description }}</td>
+                <td>{{ spot.rating }}</td>
+                <td>
+                  <!-- 編集ボタン -->
+                  <a href="{% url 'edit_spot' spot.id %}" class="btn btn-warning btn-sm">編集</a>
+                  
+                  <!-- 削除ボタン -->
+                  <form method="POST" action="{% url 'delete_spot' spot.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                  </form>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4">現在登録されているおすすめスポットはありません。</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <!-- ホームに戻るボタン -->
+        <a href="{% url 'home' %}" class="btn btn-primary">ホームに戻る</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
