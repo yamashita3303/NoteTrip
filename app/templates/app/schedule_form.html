@@ -59,7 +59,7 @@
     button[type="submit"] {
         width: 100%;
         padding: 10px;
-        background-color: #505050;
+        background-color:#b0deec;
         color: #ffffff;
         border: none;
         border-radius: 5px;
@@ -76,7 +76,6 @@
     button[type="submit"]:active {
         transform: translateY(0);
     }
-    
 </style>
 {% endblock %}
 
@@ -86,8 +85,16 @@
 
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}  <!-- Djangoのフォームを自動生成して表示 -->
+        {{ form.as_p }}
         <button type="submit">追加</button>
     </form>
+
+    <!-- 🔹 `request.resolver_match.kwargs` を使って URL から `plan_id` を取得 -->
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{% url 'schedule' request.resolver_match.kwargs.plan_id %}" 
+           style="text-decoration: none; color: #007BFF;">
+            スケジュール一覧に戻る
+        </a>
+    </div>
 </div>
 {% endblock %}

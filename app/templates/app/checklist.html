@@ -33,7 +33,6 @@
             {% endfor %}
         </ul>
         {% endfor %}
-        <button type="submit" class="update-checklist-button">チェックリストを更新</button>
     </form>
 </div>
 
@@ -65,20 +64,12 @@
 
     ul {
         list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    ul {
-        list-style: none; /* デフォルトのリストマーカーを無効化 */
         padding-left: 0; /* 左の余白を削除 */
+        margin: 0;
     }
 
     li {
         margin-bottom: 10px; /* リスト項目の間隔を調整 */
-    }
-
-    ul li {
         display: flex;
         align-items: center;
         background-color: #eeeeee;
@@ -89,25 +80,20 @@
         justify-content: space-between;
     }
 
-    ul li label {
+    li label {
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    ul li input[type="checkbox"] {
+    li input[type="checkbox"] {
         cursor: pointer;
         width: 18px;
         height: 18px;
     }
 
-    ul li:hover {
+    li:hover {
         background-color: #dddddd;
-    }
-
-    ul li span {
-        font-size: 16px;
-        color: #444444;
     }
 
     .add-item-button {
@@ -129,24 +115,6 @@
         background-color: #777777;
     }
 
-    .update-checklist-button {
-        display: block;
-        margin: 20px auto 0;
-        padding: 10px 20px;
-        font-size: 16px;
-        font-weight: bold;
-        color: #ffffff;
-        background-color: #505050;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .update-checklist-button:hover {
-        background-color: #404040;
-    }
-
     .delete-item-form {
         margin: 0;
         text-align: right;
@@ -164,6 +132,5 @@
     .delete-item-button:hover {
         background-color: #ff1a1a;
     }
-    
 </style>
 {% endblock %}
