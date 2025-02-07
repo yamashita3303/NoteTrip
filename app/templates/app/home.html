@@ -315,9 +315,9 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
             display: flex;
             justify-content: center; /*左右エリアを中央に寄せる */
             align-items: center;
-            width:100vw;
+            width:98vw;
             gap: 30px; /* 各エリア間のスペース */
-            margin-left:0;
+            /* margin-left:0; */
         }
         
         /* 半円を突き出す円形写真 */
@@ -359,9 +359,9 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
             color: #fff; /* 文字色 */
             padding: 10px 20px;
             border-radius: 5px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
-            text-align: center;
+            text-align: left;
             transition: background-color 0.3s, transform 0.2s;
         
         }
@@ -371,9 +371,9 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
             color: #fff; /* 文字色 */
             padding: 10px 20px;
             border-radius: 5px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
-            text-align: center;
+            text-align: left;
             transition: background-color 0.3s, transform 0.2s;
         
         }
@@ -383,9 +383,9 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
             color: #fff; /* 文字色 */
             padding: 10px 20px;
             border-radius: 5px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
-            text-align: center;
+            text-align: left;
             transition: background-color 0.3s, transform 0.2s;
         
         }
@@ -395,9 +395,9 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
             color: #fff; /* 文字色 */
             padding: 10px 20px;
             border-radius: 5px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
-            text-align: center;
+            text-align: left;
             transition: background-color 0.3s, transform 0.2s;
         
         }
@@ -418,11 +418,11 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
 
         /* ヘッダー左右エリアを中央に寄せる */
         .nav-links:first-child {
-            margin-right: 200px; /* 写真に近づける */
+            margin-right: 160px; /* 写真に近づける */
         }
         
         .nav-links:last-child {
-            margin-left: 200px; /* 写真に近づける */
+            margin-left: 160px; /* 写真に近づける */
         }
 
         .plan-container {
@@ -457,8 +457,8 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
         <nav class="navbar">
             <!-- 左側のリンク -->
             <div class="nav-links">
-                <a href="{% url 'home' %}" class="tab1">Home</a>
-                <a href="{% url 'logout' %}" class="tab2">Logout</a>
+                <a href="{% url 'home' %}" class="tab1">ホーム</a>
+                <a href="{% url 'logout' %}" class="tab2">ログアウト</a>
           </div>
    
             <!-- 中央の円形写真 -->
@@ -469,9 +469,9 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
    
             <!-- 右側のリンク -->
             <div class="nav-links">
-                <a href="{% url 'application' %}" class="tab3">Contact</a></li>
+                <a href="{% url 'application' %}" class="tab3">お問い合わせ</a></li>
                 {% if applicant_id %}
-                    <a href="{% url 'add_spot' applicant_id=applicant_id %}" class="tab4">Add spots</a>
+                    <a href="{% url 'add_spot' applicant_id=applicant_id %}" class="tab4">スポット</a>
                 {% else %}
                     <span>申請後にスポットを追加できます</span>
                 {% endif %}

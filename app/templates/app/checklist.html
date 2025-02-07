@@ -18,9 +18,9 @@
             <li>
                 <label>
                     <!-- チェックボックスを生成 -->
-                    <input 
-                        type="checkbox" 
-                        name="item_{{ item.id }}" 
+                    <input
+                        type="checkcheck"
+                        name="item_{{ item.id }}"
                         {% if item.situation %}checked{% endif %}>
                     {{ item.name }}
                 </label>
@@ -60,6 +60,14 @@
         color: #888888;
         text-align: center;
         margin-bottom: 20px;
+    }
+
+    input[type="checkcheck"] {
+    width: 20px;
+    height: 20px;
+    appearance: auto; /* デフォルトの表示を強制 */
+    visibility: visible;
+    display: inline-block;
     }
 
     ul {
