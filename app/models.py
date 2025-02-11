@@ -26,8 +26,6 @@ class CustomUser(AbstractUser):
     def rejected_applications(self):
         return self.applications.filter(status='rejected')
 
-    def __str__(self):
-        return f"{self.sei} {self.mei}"
 
 class Application(models.Model):
     sei = models.CharField(max_length=50)

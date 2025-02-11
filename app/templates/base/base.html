@@ -267,7 +267,7 @@
             <!-- 右側のリンク -->
             <div class="nav-links">
               <a href="{% url 'checklist' plan.id|default:1 %}" class="tab3">チェックリスト</a>
-              <a href="#" class="tab4">マップ</a>
+              <a href="{% url 'map' plan.id|default:1 %}" class="tab4">マップ</a>
           </div>
         </nav>
         

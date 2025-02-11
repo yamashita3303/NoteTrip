@@ -1,9 +1,11 @@
 from collections import defaultdict
+import os
 from django.shortcuts import render, redirect, get_object_or_404, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.contrib import messages
 from django.views import View
+import openai
 from .models import CustomUser, Application, Spot, Plan, Checklist, Schedule
 from .forms import CustomUserCreationForm, PlanForm, Scheduleform, ChecklistForm, AssociationApplicationForm, SpotForm
 from django.contrib.auth.tokens import default_token_generator
@@ -761,3 +763,47 @@ class LogoutView(View):
     
 logout_view = LogoutView.as_view() 
 
+openai.api_key = os.getenv('API_KEY')
+
+def map(request, plan_id):
+    # Plan と関連する Schedule を取得
+    plan = get_object_or_404(Plan, id=plan_id)
+    
+    # スケジュールを開始日と開始時間でソートして取得
+    schedules = Schedule.objects.filter(plan=plan).order_by('start_dt', 'start_at')
+    
+    # 経由地の住所リストと日付リストを作成
+    address_list = list(schedules.values_list('address', flat=True))
+    day_list = list(schedules.values_list('day', flat=True))
+    
+    # 日付ごとに住所をグループ化
+    day_address_map = {}
+    for schedule in schedules:
+        day = schedule.day
+        address = schedule.address
+        if day not in day_address_map:
+            day_address_map[day] = []
+        day_address_map[day].append(address)
+    
+    # 2次元配列化
+    day_address_list = [[day, addresses] for day, addresses in day_address_map.items()]
+    
+    print("Schedules:", schedules)
+    print("Address List:", address_list)
+    print("Day List:", day_list)
+    print("Day Address List:", day_address_list)
+
+    import json
+
+    spots = Spot.objects.values("name", "address")
+    spots_json = json.dumps(list(spots))
+
+    
+    context = {
+        'plan': plan,
+        'address_list': address_list,  # 経由地リストをテンプレートに渡す
+        'day_address_list': day_address_list,  # 日付別の住所リストをテンプレートに渡す
+        'spots_json': spots_json,
+    }
+    
+    return render(request, 'app/map.html', context)
