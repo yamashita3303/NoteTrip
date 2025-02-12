@@ -53,7 +53,7 @@ admin.site.register(Application, ApplicationAdmin)
 
 # モデルの登録
 admin_site.register(CustomUser)
-admin_site.register(Spot)
+admin.site.register(Spot)
 admin.site.register(CustomUser)
 admin.site.register(Plan)
 admin.site.register(Schedule)
