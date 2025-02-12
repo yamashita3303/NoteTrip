@@ -471,10 +471,11 @@ input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:
             <div class="nav-links">
                 <a href="{% url 'application' %}" class="tab3">お問い合わせ</a></li>
                 {% if applicant_id %}
-                    <a href="{% url 'add_spot' applicant_id=applicant_id %}" class="tab4">スポット</a>
-                {% else %}
-                    <span>申請後にスポットを追加できます</span>
-                {% endif %}
+                <a href="{% url 'add_spot' applicant_id=applicant_id %}" class="tab4">スポット</a>
+            {% else %}
+                <a href="#" class="tab4" onclick="alert('観光協会申請後にスポットを追加できます'); return false;">スポット</a>
+            {% endif %}
+            
           </div>
         </nav>
         
