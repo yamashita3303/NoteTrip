@@ -1,8 +1,7 @@
-<!DOCTYPE html>
-<html>
+{% extends "base/base.html" %}
+{% load static %}
 
-<head>
-    <title>複数地点のリアルタイムルート更新</title>
+{% block body %}
     <style>
         #map {
             height: 400px;
@@ -30,7 +29,7 @@
 
         .tab.active,
         .day-tab.active {
-            background-color: #4285F4;
+            background-color: #b0deec;
             color: white;
         }
 
@@ -46,7 +45,6 @@
             margin-top: 10px;
         }
     </style>
-</head>
 
 <body>
     <div id="controls">
@@ -327,6 +325,4 @@
     <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEP5Fu9ChgnN4H4AX872QLG5529wbSJSo&callback=initMap&libraries=geometry"
         async defer></script>
-</body>
-
-</html>
+        {% endblock %}
