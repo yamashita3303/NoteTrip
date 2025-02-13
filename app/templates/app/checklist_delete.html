@@ -6,7 +6,9 @@
     <h1>削除確認</h1>
     <p>本当に以下のアイテムを削除しますか？</p>
     <p><strong>{{ item.name }}</strong></p>
-    <form method="POST">
+    
+    <!-- 削除フォームの action を追加 -->
+    <form method="POST" action="{% url 'delete_item' plan.id item.id %}">
         {% csrf_token %}
         <button type="submit" class="confirm-button">削除</button>
         <a href="{% url 'checklist' plan.id %}" class="cancel-button">キャンセル</a>

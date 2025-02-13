@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .admin import admin_site
-from .views import create_plan, edit_plan, delete_plan, home, plan_detail, get_events, member, share, approve_view, checklist_view, add_item_view, schedule, schedule_create, schedule_detail, schedule_edit, schedule_delete, map
+from .views import create_plan, edit_plan, delete_plan, home, plan_detail, get_events, member, share, approve_view, checklist_view, delete_item_view, delete_item_confirm, add_item_view, schedule, schedule_create, schedule_detail, schedule_edit, schedule_delete, map
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -46,7 +46,8 @@ urlpatterns = [
     path('schedule/<int:plan_id>/<int:schedule_id>/confirmation/delete/', schedule_delete, name='schedule_delete'),
     path('checklist/<int:plan_id>/', checklist_view, name='checklist'),
     path('checklist/<int:plan_id>/add/', add_item_view, name='add_item'),# チェックリスト追加用URL
-    path('checklist/<int:plan_id>/delete/<int:item_id>/', views.delete_item_view, name='delete_item'),  # チェックリスト削除用URL
+    path('checklist/<int:plan_id>/delete/<int:item_id>/confirm/', delete_item_confirm, name='delete_item_confirm'),  # 削除確認ページ
+    path('checklist/<int:plan_id>/delete/<int:item_id>/', delete_item_view, name='delete_item'),  # 削除処理
     path('get-events/', get_events, name='get-events'),
     path('map/<int:plan_id>/', map, name='map'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

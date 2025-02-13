@@ -732,6 +732,12 @@ def add_item_view(request, plan_id):
         form = ChecklistForm()
     return render(request, 'app/add_item.html', {'plan': plan, 'form': form})
 
+def delete_item_confirm(request, plan_id, item_id):
+    plan = get_object_or_404(Plan, id=plan_id)
+    item = get_object_or_404(Checklist, id=item_id, plan=plan)
+
+    return render(request, 'app/checklist_delete.html', {'plan': plan, 'item': item})
+
 # チェックリスト削除
 def delete_item_view(request, plan_id, item_id):
     # plan_id と item_id で対象アイテムを取得
