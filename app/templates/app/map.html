@@ -48,14 +48,9 @@
 
 <body>
     <div id="controls">
-        <label>出発地: <input id="origin" type="text" placeholder="例: 東京駅"></label>
-        <br>
-        <label>目的地: <input id="destination" type="text" placeholder="例: 京都駅"></label>
-        <br>
         <label>経由地点:</label>
         <div id="waypoints"></div>
         <button onclick="addWaypoint()">経由地を追加</button>
-        <button onclick="updateRoute()">ルート更新</button>
     </div>
 
     <!-- 移動手段のタブ -->
@@ -101,6 +96,22 @@
             directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
 
             getCurrentLocation();
+
+            let routeInterval = setInterval(() => {
+                let originInput = document.getElementById("origin"); // `null` チェック
+                if (originInput && originInput.value) {
+                    updateRoute();
+                    clearInterval(routeInterval);
+                }
+            }, 1000);
+
+            // let routeInterval = setInterval(() => {
+            //     let origin = document.getElementById("origin").value;
+            //     if (origin) {
+            //         updateRoute();
+            //         clearInterval(routeInterval);
+            //     }
+            // }, 1000); // 1秒ごとにチェック
         }
 
         function getCurrentLocation() {
@@ -131,6 +142,7 @@
                             currentPositionMarker.setPosition(currentLocation);
                         }
 
+                        updateRoute();
                         showNearbySpots();
 
                         document.getElementById("origin").value = `${lat},${lng}`;
@@ -153,6 +165,7 @@
             input.className = "waypoint";
             input.placeholder = `経由地 ${waypointContainer.children.length + 1}`;
             waypointContainer.appendChild(input);
+            updateRoute();
         }
 
         function switchTab(mode) {
@@ -168,14 +181,12 @@
 
             document.querySelectorAll(".address-list").forEach(list => list.classList.remove("active"));
             document.getElementById(`addresses-${day}`).classList.add("active");
+            updateRoute();
         }
 
         function updateRoute(travelMode = currentTravelMode) {
-            const origin = document.getElementById("origin").value;
-            const destination = document.getElementById("destination").value;
-
-            if (!origin || !destination) {
-                alert("出発地と目的地を入力してください！");
+            if (!currentLocation) {
+                alert("現在地が取得できるまでお待ちください！");
                 return;
             }
 
@@ -185,8 +196,15 @@
                 .filter(value => value.trim() !== "")
                 .map(location => ({ location: location, stopover: true }));
 
+            if (waypoints.length === 0) {
+                alert("経由地点がありません。少なくとも1つ追加してください。");
+                return;
+            }
+
+            const destination = waypoints.pop().location; // 最後の経由地点を目的地に設定
+
             const request = {
-                origin: origin,
+                origin: currentLocation,
                 destination: destination,
                 waypoints: waypoints,
                 travelMode: google.maps.TravelMode[travelMode],
@@ -205,6 +223,7 @@
                 }
             });
         }
+
 
         function displayRouteDetails(legs) {
             const detailsContainer = document.getElementById("route-details");
