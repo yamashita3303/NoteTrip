@@ -13,22 +13,20 @@
         {% csrf_token %}
         {% for category, items in items_by_category.items %}
         <h2>{{ category|capfirst }}</h2> <!-- カテゴリ名を1回だけ表示 -->
-        <ul style="list-style: none; padding-left: 0;"> <!-- マーカーを消すスタイル -->
+        <ul>
             {% for item in items %}
             <li>
                 <label>
                     <!-- チェックボックスを生成 -->
                     <input
-                        type="checkcheck"
+                        type="checkbox"
                         name="item_{{ item.id }}"
                         {% if item.situation %}checked{% endif %}>
                     {{ item.name }}
                 </label>
 
-                <!-- 削除ボタンを右寄せにするフォーム -->
-                <form action="{% url 'delete_item' plan.id item.id %}" method="GET" class="delete-item-form">
-                    <button type="submit" class="delete-item-button">削除</button>
-                </form>            
+                <a href="{% url 'delete_item_confirm' plan.id item.id %}" class="delete-item-button">削除</a>
+
             </li>
             {% endfor %}
         </ul>
@@ -62,7 +60,7 @@
         margin-bottom: 20px;
     }
 
-    input[type="checkcheck"] {
+    .checklist input[type="checkbox"] {
     width: 20px;
     height: 20px;
     appearance: auto; /* デフォルトの表示を強制 */
@@ -104,19 +102,23 @@
         background-color: #dddddd;
     }
 
+    a {
+        text-decoration: none !important; /* 下線を完全に削除 */
+    }
+
     .add-item-button {
         display: block;
         margin: 0 auto 20px auto;
         padding: 10px 20px;
         font-size: 16px;
         font-weight: bold;
-        color: #ffffff;
+        color: #ffffff; /* 明示的に白色指定 */
         background-color: #888888;
         border: none;
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.3s;
-        text-decoration: none;
+        text-align: center; /* テキストを中央寄せ */
     }
 
     .add-item-button:hover {
@@ -131,10 +133,11 @@
     .delete-item-button {
         padding: 5px 10px;
         background-color: #ff4d4d;
-        color: white;
+        color: white !important;
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        text-decoration: none; /* 下線を消す */
     }
 
     .delete-item-button:hover {
