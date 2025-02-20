@@ -139,6 +139,19 @@
         background-color: #FFEB3B;
         color: #333;
     }
+    /* ボタンが表示中のオススメスポットを示す */
+#nearby-spots-button.active {
+    background-color: #ffee52;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+}
+
+#nearby-spots-button.inactive {
+    background-color: #FFF9C4;
+    color: #333;
+    font-weight: normal;
+}
+
 </style>
 
 <body>
@@ -297,14 +310,21 @@
             });
         }
 
-        function toggleNearbySpots() {
-            if (areSpotsVisible) {
-                hideNearbySpots();
-            } else {
-                showNearbySpots();
-            }
-            areSpotsVisible = !areSpotsVisible;
+    function toggleNearbySpots() {
+        if (areSpotsVisible) {
+            hideNearbySpots();
+            document.getElementById("nearby-spots-button").classList.remove("active");
+            document.getElementById("nearby-spots-button").classList.add("inactive");
+            document.getElementById("nearby-spots-button").innerText = "おすすめスポット";
+        } else {
+            showNearbySpots();
+            document.getElementById("nearby-spots-button").classList.remove("inactive");
+            document.getElementById("nearby-spots-button").classList.add("active");
+            document.getElementById("nearby-spots-button").innerText = "オススメスポット表示中";
         }
+        areSpotsVisible = !areSpotsVisible;
+}
+
 
         function showNearbySpots() {
             if (!navigator.geolocation) {

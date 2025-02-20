@@ -35,7 +35,7 @@
             box-sizing: border-box; /* 余白を含めたサイズ計算 */
         }
         button {
-            background-color: #464646;
+            background-color: #b0deec;
             color: white;
             padding: 10px;
             border: none;
@@ -45,7 +45,7 @@
             transition: background-color 0.3s; /* 背景色の遷移を追加 */
         }
         button:hover {
-            background-color: #0056b3; /* ホバー時の色 */
+            background-color: #707070; /* ホバー時の色 */
         }
     </style>
 </head>
@@ -70,5 +70,8 @@
 
         <button type="submit">保存</button>
     </form>
+
+    <a href="{% url 'home' %}" style="display: block; text-align: center; margin-top: 20px; font-size: 16px; color: #333; text-decoration: none; font-weight: bold;">ホームに戻る</a>
+
 </body>
 </html>
