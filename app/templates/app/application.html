@@ -1,65 +1,152 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>観光協会申請</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-4 mt-5"> <!-- mt-5 でフォーム全体を下に下げる -->
-            <h1 class="text-center mb-4">観光協会申請</h1>
-            <!-- フォームの送信時にエラーがある場合に表示 -->
-            {% if form.errors %}
-                <div class="form-errors">
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    {% endfor %}
-                </div>
-            {% endif %}
+{% load static %}
 
+{% block extra_styles %}
+<style>
+    body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
 
-            <form method="post"  enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="sei">姓</label>
-                    <input type="text" class="form-control" id="sei" name="sei" required>
-                </div>
-                <div class="form-group">
-                    <label for="sei_kana">姓(フリガナ)</label>
-                    <input type="text" class="form-control" id="sei_kana" name="sei_kana" required>
-                </div>
-                <div class="form-group">
-                    <label for="mei">名</label>
-                    <input type="text" class="form-control" id="mei" name="mei" required>
-                </div>
-                <div class="form-group">
-                    <label for="mei_kana">名(フリガナ)</label>
-                    <input type="text" class="form-control" id="mei_kana" name="mei_kana" required>
-                </div>
-                <div class="form-group">
-                    <label for="organization">所属団体名または会社名</label>
-                    <input type="organization" class="form-control" id="organization" name="organization" required>
-                </div>
-                <div class="form-group">
-                    <label for="position">役職</label>
-                    <input type="text" class="form-control" id="position" name="position" required>
-                </div>
-                <div>
-                    <label for="relationship_proof">観光協会との関係の証明</label>
-                    <textarea id="relationship_proof" name="relationship_proof" rows="4" required
-                        placeholder="観光協会の会員番号や過去の協会活動への参加履歴、協会メンバーとしての役割など、観光協会との具体的な関係や参加実績などを書いてください"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">申請する</button>
-            </form>
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 50px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 26px;
+    color: #333;
+    text-align: center;
+    font-weight: bold;
+}
+
+form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-group input, 
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    background-color: #fdfdfd;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+    border-color: #b0deec;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+.alert {
+    color: #D8000C;
+    background-color: #FFD2D2;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #b0deec;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #707070;
+    transform: translateY(-2px);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="form-container">
+    <h1>観光協会申請</h1>
+    
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
         </div>
-    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="sei">姓</label>
+            <input type="text" class="form-control" id="sei" name="sei" required>
+        </div>
+        <div class="form-group">
+            <label for="sei_kana">姓(フリガナ)</label>
+            <input type="text" class="form-control" id="sei_kana" name="sei_kana" required>
+        </div>
+        <div class="form-group">
+            <label for="mei">名</label>
+            <input type="text" class="form-control" id="mei" name="mei" required>
+        </div>
+        <div class="form-group">
+            <label for="mei_kana">名(フリガナ)</label>
+            <input type="text" class="form-control" id="mei_kana" name="mei_kana" required>
+        </div>
+        <div class="form-group">
+            <label for="organization">所属団体名または会社名</label>
+            <input type="text" class="form-control" id="organization" name="organization" required>
+        </div>
+        <div class="form-group">
+            <label for="position">役職</label>
+            <input type="text" class="form-control" id="position" name="position" required>
+        </div>
+        <div class="form-group">
+            <label for="relationship_proof">観光協会との関係の証明</label>
+            <textarea id="relationship_proof" name="relationship_proof" rows="4" class="form-control" required placeholder="観光協会の会員番号や過去の協会活動への参加履歴、協会メンバーとしての役割など、観光協会との具体的な関係や参加実績などを書いてください"></textarea>
+        </div>
+        <button type="submit">申請する</button>
+    </form>
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}
