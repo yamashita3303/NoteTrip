@@ -240,7 +240,6 @@ def application_completeView(request):
     print("申請完了ビューが呼ばれました")
     return render(request, 'app/application_complete.html')  # 申請完了テンプレートを表示
 
-# ダッシュボードビュー
 def dashboardView(request):
     if not request.user.is_staff:
         return redirect('home')  # 管理者以外はホームにリダイレクト
@@ -249,13 +248,16 @@ def dashboardView(request):
     status_filter = request.GET.get('status', 'pending')  # URLのクエリパラメータから状態を取得
     tab = request.GET.get('tab', 'requests')  # タブの状態を取得
     
-    # 状態に基づいてフィルタリング
-    if status_filter == 'approved':
-        applications = Application.objects.filter(status=Application.APPROVED)
-    elif status_filter == 'rejected':
-        applications = Application.objects.filter(status=Application.REJECTED)
+    # 管理者の場合は全申請を取得、ユーザーの場合は自身の申請のみ取得
+    if request.user.is_staff:
+        if status_filter == 'approved':
+            applications = Application.objects.filter(status=Application.APPROVED)
+        elif status_filter == 'rejected':
+            applications = Application.objects.filter(status=Application.REJECTED)
+        else:
+            applications = Application.objects.filter(status=Application.PENDING)
     else:
-        applications = Application.objects.filter(status=Application.PENDING)
+        applications = Application.objects.filter(user=request.user)  # ユーザー自身の申請のみ表示
     
     return render(request, 'app/dashboard.html', {'applications': applications, 'spots': spots, 'status_filter': status_filter, 'tab': tab})
 

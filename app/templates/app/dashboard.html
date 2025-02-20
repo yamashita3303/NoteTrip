@@ -5,6 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>管理者ダッシュボード</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  {% block extra_styles %}
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 26px;
+      color: #333;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    .nav-tabs {
+      margin-bottom: 20px;
+    }
+
+    .tab-content {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      font-size: 14px;
+      transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      background-color: #fdfdfd;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: #b0deec;
+      outline: none;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    }
+
+    .alert {
+      color: #D8000C;
+      background-color: #FFD2D2;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #b0deec;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #707070;
+      transform: translateY(-2px);
+    }
+
+    button[type="submit"]:active {
+      transform: translateY(0);
+    }
+  </style>
+  {% endblock %}
 </head>
 <body>
   <h1 class="text-center mb-4">管理者ページ</h1>
@@ -22,20 +117,19 @@
   <div class="container">
     <div class="row justify-content-center">
       <!-- メッセージ表示エリア -->
-<div>
-  {% if messages %}
-    <div class="alert alert-info">
-      {% for message in messages %}
-        <p>{{ message }}</p>
-      {% endfor %}
-    </div>
-  {% endif %}
-</div>
+      <div>
+        {% if messages %}
+        <div class="alert alert-info">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
 
       <div class="tab-content mt-4" id="dashboardTabsContent">
         <!-- 申請確認タブのコンテンツ -->
         <div class="tab-pane fade show active" id="requests" role="tabpanel" aria-labelledby="requests-tab">
-          <!-- ステータスフィルタリング -->
           <div class="mb-3">
             <a href="{% url 'dashboard' %}?status=pending" class="btn btn-info {% if status_filter == 'pending' %}active{% endif %}">未処理</a>
             <a href="{% url 'dashboard' %}?status=approved" class="btn btn-success {% if status_filter == 'approved' %}active{% endif %}">承認</a>
@@ -65,25 +159,19 @@
                 </td>
                 <td>
                   {% if application.status == 'pending' %}
-                    <!-- 承認ボタン -->
                     <form method="POST" action="{% url 'approve_application' application.id %}">
                       {% csrf_token %}
                       <button type="submit" class="btn btn-success">承認</button>
                     </form>
-          
-                    <!-- 却下ボタン -->
                     <form method="POST" action="{% url 'reject_application' application.id %}">
                       {% csrf_token %}
                       <button type="submit" class="btn btn-danger">却下</button>
                     </form>
-          
-                    <!-- 削除ボタン -->
                     <form method="POST" action="{% url 'delete_application' application.id %}" style="display:inline;">
                       {% csrf_token %}
                       <button type="submit" class="btn btn-secondary btn-sm">削除</button>
                     </form>
                   {% else %}
-                    <!-- 承認済みまたは却下済みの申請では操作を無効化 -->
                     <span class="text-muted">操作不可</span>
                   {% endif %}
                 </td>
@@ -101,7 +189,7 @@
                 <th>スポット名</th>
                 <th>詳細</th>
                 <th>評価</th>
-                <th>操作</th>  <!-- 削除ボタン用の列を追加 -->
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
@@ -111,7 +199,6 @@
                 <td>{{ spot.description }}</td>
                 <td>{{ spot.rating }}</td>
                 <td>
-                  <!-- 削除ボタン -->
                   <form method="POST" action="{% url 'delete_spot' spot.id %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger btn-sm">削除</button>
@@ -129,7 +216,6 @@
       </div>
     </div>
 
-    <!-- ログアウトボタン -->
     <a href="{% url 'logout' %}" class="btn btn-outline-danger float-right">ログアウト</a>
   </div>
 
