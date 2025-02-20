@@ -517,7 +517,8 @@ def delete_plan(request, plan_id):
 def plan_detail(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)  # 特定のプランを取得
     context = {
-        'plan': plan  # プランの情報をコンテキストに渡す
+        'plan': plan,  # プランの情報をコンテキストに渡す
+        'plan_id': plan_id, 
     }
     return render(request, 'app/plan_detail.html', context)
 
@@ -528,7 +529,8 @@ def get_events(request):
 def member(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)  # 特定のプランを取得
     context = {
-        'plan': plan  # プランの情報をコンテキストに渡す
+        'plan': plan,  # プランの情報をコンテキストに渡す
+        'plan_id': plan_id, 
     }
     return render(request, 'app/member.html', context)
 
@@ -627,6 +629,7 @@ def schedule(request, plan_id):
 
     context = {
         'plan': plan,
+        'plan_id': plan_id,
         'plan_days_range': plan_days_range,
         'schedules': schedules,
         'select_day': day,  # テンプレートに渡す選択日
@@ -638,11 +641,12 @@ def schedule(request, plan_id):
 def schedule_detail(request, plan_id, schedule_id):
     plan = get_object_or_404(Plan, id=plan_id)
     schedule = get_object_or_404(Schedule, id=schedule_id)
-    return render(request, 'app/schedule_detail.html', {'plan': plan, 'schedule': schedule})
+    return render(request, 'app/schedule_detail.html', {'plan': plan, 'plan_id': plan_id, 'schedule': schedule})
 
 # スケジュール作成
 def schedule_create(request, plan_id, day):
     plan = get_object_or_404(Plan, id=plan_id)
+    print("------{}------".format(plan_id))
     if request.method == 'POST':
         form = Scheduleform(request.POST)
         print(request.POST)  # デバッグ用
@@ -657,7 +661,7 @@ def schedule_create(request, plan_id, day):
             
     else:
         form = Scheduleform()
-    return render(request, 'app/schedule_form.html', {'form': form})
+    return render(request, 'app/schedule_form.html', {'form': form, "plan_id":plan_id})
 
 # スケジュール編集
 def schedule_edit(request, plan_id, schedule_id):
@@ -670,7 +674,7 @@ def schedule_edit(request, plan_id, schedule_id):
             return redirect('schedule', plan_id=plan_id)
     else:
         form = Scheduleform(instance=schedule)
-    return render(request, 'app/schedule_edit.html',  {'form': form, 'plan': plan, 'schedule': schedule})
+    return render(request, 'app/schedule_edit.html',  {'form': form, 'plan': plan, 'plan_id': plan_id, 'schedule': schedule})
 
 #スケジュール削除確認画面
 def schedule_kakunin(request, plan_id, schedule_id):
@@ -678,7 +682,7 @@ def schedule_kakunin(request, plan_id, schedule_id):
     schedule = get_object_or_404(Schedule, id=schedule_id, plan_id=plan_id)
     
     # テンプレートにスケジュールを渡してレンダリング
-    return render(request, 'app/schedule_kakunin.html', {'schedule': schedule})
+    return render(request, 'app/schedule_kakunin.html', {'plan_id': plan_id, 'schedule': schedule})
 
 # スケジュール削除
 def schedule_delete(request, plan_id, schedule_id):
@@ -687,7 +691,7 @@ def schedule_delete(request, plan_id, schedule_id):
     if request.method == "POST":
         schedule.delete()  # スケジュールを削除
         return redirect('schedule', plan_id=plan_id)  # インデックスページにリダイレクト
-    return render(request, 'app/schedule_delete.html', {'plan': plan, 'schedule': schedule})
+    return render(request, 'app/schedule_delete.html', {'plan': plan, 'plan_id': plan_id, 'schedule': schedule})
 
 # チェックリストビュー
 def checklist_view(request, plan_id):
@@ -713,6 +717,7 @@ def checklist_view(request, plan_id):
 
     context = {
         'plan': plan,
+        'plan_id': plan_id, 
         'items_by_category': items_by_category
     }
     return render(request, 'app/checklist.html', context)
@@ -730,13 +735,13 @@ def add_item_view(request, plan_id):
             return redirect('checklist', plan_id=plan_id)
     else:
         form = ChecklistForm()
-    return render(request, 'app/add_item.html', {'plan': plan, 'form': form})
+    return render(request, 'app/add_item.html', {'plan': plan, 'plan_id': plan_id, 'form': form})
 
 def delete_item_confirm(request, plan_id, item_id):
     plan = get_object_or_404(Plan, id=plan_id)
     item = get_object_or_404(Checklist, id=item_id, plan=plan)
 
-    return render(request, 'app/checklist_delete.html', {'plan': plan, 'item': item})
+    return render(request, 'app/checklist_delete.html', {'plan': plan, 'plan_id': plan_id, 'item': item})
 
 # チェックリスト削除
 def delete_item_view(request, plan_id, item_id):
@@ -750,7 +755,7 @@ def delete_item_view(request, plan_id, item_id):
         return redirect('checklist', plan_id=plan_id)  # チェックリストページにリダイレクト
     
     # GETリクエストの場合、削除確認ページなどを表示することも可能
-    return render(request, 'app/checklist_delete.html', {'plan': plan, 'item': item})
+    return render(request, 'app/checklist_delete.html', {'plan': plan, 'plan_id': plan_id, 'item': item})
 
 
 def top(request):
@@ -807,6 +812,7 @@ def map(request, plan_id):
     
     context = {
         'plan': plan,
+        'plan_id': plan_id, 
         'address_list': address_list,  # 経由地リストをテンプレートに渡す
         'day_address_list': day_address_list,  # 日付別の住所リストをテンプレートに渡す
         'spots_json': spots_json,
