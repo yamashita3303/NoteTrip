@@ -2,49 +2,98 @@
 {% load static %}
 
 {% block body %}
-    <style>
-        #map {
-            height: 400px;
-            width: 100%;
-        }
+<style>
+    #map {
+        height: 400px;
+        width: 100%;
+    }
 
-        #controls {
-            margin-bottom: 10px;
-        }
+    #controls {
+        margin-bottom: 10px;
+    }
 
-        #tabs,
-        #day-tabs {
-            display: flex;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
+    #tabs,
+    #day-tabs {
+        display: flex;
+        margin-bottom: 10px;
+        cursor: pointer;
+    }
 
-        .tab,
-        .day-tab {
-            padding: 10px;
-            border: 1px solid #ccc;
-            margin-right: 5px;
-            background-color: #f9f9f9;
-        }
+    .tab,
+    .day-tab {
+        padding: 10px;
+        border: 1px solid #ccc;
+        margin-right: 5px;
+        background-color: #f9f9f9;
+    }
 
-        .tab.active,
-        .day-tab.active {
-            background-color: #b0deec;
-            color: white;
-        }
+    .tab.active,
+    .day-tab.active {
+        background-color: #b0deec;
+        color: white;
+    }
 
-        .address-list {
-            display: none;
-        }
+    .address-list {
+        display: none;
+    }
 
-        .address-list.active {
-            display: block;
-        }
+    .address-list.active {
+        display: block;
+    }
 
-        #route-details {
-            margin-top: 10px;
-        }
-    </style>
+    /* 区間全体のデザイン */
+    #route-details {
+        margin-top: 20px;
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 区間ごとのカードデザイン */
+    .route-leg {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 15px;
+        background-color: #fff;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .route-leg h4 {
+        margin-top: 0;
+        color: #4285F4;
+    }
+
+    .route-leg p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    /* 強調ラベル */
+    .route-leg p span {
+        font-weight: bold;
+    }
+
+    /* 距離と時間のアイコン */
+    .icon-text {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+    }
+
+    .icon-text img {
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+    }
+
+    /* セクション見出し */
+    #route-details h3 {
+        margin-bottom: 15px;
+        color: #333;
+    }
+</style>
 
 <body>
     <div id="controls">
@@ -98,20 +147,12 @@
             getCurrentLocation();
 
             let routeInterval = setInterval(() => {
-                let originInput = document.getElementById("origin"); // `null` チェック
+                let originInput = document.getElementById("origin");
                 if (originInput && originInput.value) {
                     updateRoute();
                     clearInterval(routeInterval);
                 }
             }, 1000);
-
-            // let routeInterval = setInterval(() => {
-            //     let origin = document.getElementById("origin").value;
-            //     if (origin) {
-            //         updateRoute();
-            //         clearInterval(routeInterval);
-            //     }
-            // }, 1000); // 1秒ごとにチェック
         }
 
         function getCurrentLocation() {
@@ -201,7 +242,7 @@
                 return;
             }
 
-            const destination = waypoints.pop().location; // 最後の経由地点を目的地に設定
+            const destination = waypoints.pop().location;
 
             const request = {
                 origin: currentLocation,
@@ -224,21 +265,25 @@
             });
         }
 
-
         function displayRouteDetails(legs) {
             const detailsContainer = document.getElementById("route-details");
             detailsContainer.innerHTML = "<h3>ルート詳細:</h3>";
 
             legs.forEach((leg, index) => {
                 const legDetails = `
-                    <div>
+                    <div class="route-leg">
                         <h4>区間 ${index + 1}</h4>
-                        <p>出発地: ${leg.start_address}</p>
-                        <p>目的地: ${leg.end_address}</p>
-                        <p>距離: ${leg.distance.text}</p>
-                        <p>所要時間: ${leg.duration.text}</p>
+                        <p><span>出発地:</span> ${leg.start_address}</p>
+                        <p><span>目的地:</span> ${leg.end_address}</p>
+                        <div class="icon-text">
+                            <img src="{% static 'app/images/distance_icon.png' %}" alt="距離アイコン">
+                            <span>${leg.distance.text}</span>
+                        </div>
+                        <div class="icon-text">
+                            <img src="{% static 'app/images/time_icon.png' %}" alt="時間アイコン">
+                            <span>${leg.duration.text}</span>
+                        </div>
                     </div>
-                    <hr>
                 `;
                 detailsContainer.innerHTML += legDetails;
             });
@@ -247,7 +292,6 @@
         let spotMarkers = [];
 
         function showNearbySpots() {
-            console.log("おすすめスポットボタンが押された"); // デバッグ
             if (!navigator.geolocation) {
                 alert("現在地の取得がサポートされていません。");
                 return;
@@ -257,11 +301,10 @@
             const geocoder = new google.maps.Geocoder();
             let nearbySpots = [];
             let processedCount = 0;
+
             spots.forEach(spot => {
                 geocoder.geocode({ address: spot.address }, function (results, status) {
                     processedCount++;
-                    console.log(`スポット: ${spot.name}, ステータス: ${status}`);
-
                     if (status === google.maps.GeocoderStatus.OK) {
                         const spotLocation = results[0].geometry.location;
                         const distance = google.maps.geometry.spherical.computeDistanceBetween(currentLocation, spotLocation);
@@ -279,43 +322,6 @@
                     }
                 });
             });
-            // navigator.geolocation.getCurrentPosition(position => {
-            //     const lat = position.coords.latitude;
-            //     const lng = position.coords.longitude;
-            //     const currentLocation = new google.maps.LatLng(lat, lng);
-            //     console.log("現在地取得成功:", lat, lng);
-
-            //     const spots = JSON.parse('{{ spots_json|escapejs }}');
-            //     const geocoder = new google.maps.Geocoder();
-            //     let nearbySpots = [];
-            //     let processedCount = 0;
-
-            //     spots.forEach(spot => {
-            //         geocoder.geocode({ address: spot.address }, function(results, status) {
-            //             processedCount++;
-            //             console.log(`スポット: ${spot.name}, ステータス: ${status}`);
-
-            //             if (status === google.maps.GeocoderStatus.OK) {
-            //                 const spotLocation = results[0].geometry.location;
-            //                 const distance = google.maps.geometry.spherical.computeDistanceBetween(currentLocation, spotLocation);
-
-            //                 if (distance <= 2000) {
-            //                     nearbySpots.push({
-            //                         name: spot.name,
-            //                         location: spotLocation
-            //                     });
-            //                 }
-            //             }
-
-            //             if (processedCount === spots.length) {
-            //                 displayNearbySpots(nearbySpots);
-            //             }
-            //         });
-            //     });
-            // }, error => {
-            //     console.error("現在地の取得に失敗:", error.message);
-            //     alert("現在地の取得に失敗しました。");
-            // }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
         }
 
         function displayNearbySpots(nearbySpots) {
@@ -331,17 +337,19 @@
                 const marker = new google.maps.Marker({
                     position: spot.location,
                     map: map,
-                    title: spot.name
+                    title: spot.name,
+                    icon: {
+                        url: "{% static 'app/images/yellow_star.png' %}",
+                        scaledSize: new google.maps.Size(25, 25)
+                    }
                 });
+
                 spotMarkers.push(marker);
             });
-
-            console.log("おすすめスポット表示完了");
         }
-
     </script>
 
     <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDEP5Fu9ChgnN4H4AX872QLG5529wbSJSo&callback=initMap&libraries=geometry"
         async defer></script>
-        {% endblock %}
+{% endblock %}

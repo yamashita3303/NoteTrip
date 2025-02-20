@@ -3,44 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>旅行プラン削除</title>
+    <title>ログアウト確認</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
+
         .confirmation {
             text-align: center;
-            margin: 20px 0;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
+        .confirmation p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
         .confirmation button {
             background-color: #dc3545; /* 赤色の削除ボタン */
             color: white;
-            padding: 10px;
+            padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             margin: 10px;
+            font-size: 16px;
         }
+
         .confirmation button:hover {
             opacity: 0.8;
+        }
+
+        .cancel-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        .cancel-link:hover {
+            background-color: #5a6268;
         }
     </style>
 </head>
 <body>
     <div class="confirmation">
         <p>本当にログアウトしますか？</p>
-            <form action="{% url 'logout' %}" method="post">Logout</a>
+        <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
-            <button type="submit">削除</button>
+            <button type="submit">ログアウト</button>
         </form>
-        <a href="{% url 'home' %}">キャンセル</a>
+        <a href="{% url 'home' %}" class="cancel-link">キャンセル</a>
     </div>
 </body>
 </html>

@@ -53,7 +53,7 @@
     <h1>旅行プラン編集</h1>
     <form action="{% url 'edit_plan' plan.id %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="trip-title">旅行プラン名:</label>
+        <label for="trip-title">タイトル:</label>
         <input type="text" id="trip-title" name="trip-title" value="{{ plan.title }}" required>
 
         <label for="estimated-cost">予算:</label>
@@ -65,7 +65,7 @@
         <label for="return-date">帰着日:</label>
         <input type="date" id="return-date" name="return-date" value="{{ plan.end_dt|date:'Y-m-d' }}" required>
 
-        <label for="image-upload">画像アップロード:</label>
+        <label for="image-upload">設定画像:</label>
         <input type="file" id="image-upload" name="image-upload">
 
         <button type="submit">保存</button>
