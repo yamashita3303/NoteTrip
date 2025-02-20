@@ -254,8 +254,8 @@
         <nav class="navbar">
             <!-- 左側のリンク -->
             <div class="nav-links">
-              <a href="{% url 'plan_detail' plan.id|default:1 %}" class="tab1">しおり詳細</a>
-              <a href="{% url 'schedule' plan.id|default:1 %}" class="tab2">スケジュール</a>
+              <a href="{% url 'plan_detail' plan_id|default:1 %}" class="tab1">しおり詳細</a>
+              <a href="{% url 'schedule' plan_id|default:1 %}" class="tab2">スケジュール</a>
           </div>
    
             <!-- 中央の円形写真 -->

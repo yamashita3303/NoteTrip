@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅行プラン一覧</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+                body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f0f0;
+            color: #2c2c2c;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* 左寄せに変更 */
+            padding-top: 0px;
+            overflow-x:hidden;
+        }
+
+        section {
+            margin-bottom: 60px;
+            width: 100%; /* 幅を100%に設定 */
+            text-align: left; /* 左寄せ */
+        }
+        .app-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .top-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items:center;
+            padding:10px 20px;
+        }
+
+        /* .nav-links {
+            display:flex;
+            gap:10px ;
+            margin-left:auto;
+        } */
+
+        .tabs-row {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid #000;
+            justify-content: space-between;
+        }
+
+        .tab {
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            width: 100%; 
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .btn {
+            border-radius: 5px;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+
+        @keyframes bugfix {
+  from {
+    padding: 0;
+  }  to {
+    padding: 0;
+  }
+}@-webkit-keyframes bugfix {
+  from {
+    padding: 0;
+  }  to {
+    padding: 0;
+  }
+}#overlay-button {
+  position: absolute;
+  right: 2em;
+  top: 2.5em;
+  padding: 26px 11px;
+  z-index: 5;
+  cursor: pointer;
+  user-select: none;
+}#overlay-button span {
+  height: 4px;
+  width: 35px;
+  border-radius: 2px;
+  background-color: white;
+  position: relative;
+  display: block;
+  transition: all .2s ease-in-out;
+}#overlay-button span:before {
+  top: -10px;
+  visibility: visible;
+}#overlay-button span:after {
+  top: 10px;
+}#overlay-button span:before, #overlay-button span:after {
+  height: 4px;
+  width: 35px;
+  border-radius: 2px;
+  background-color: white;
+  position: absolute;
+  content: "";
+  transition: all .2s ease-in-out;
+}#overlay-button:hover span, #overlay-button:hover span:before, #overlay-button:hover span:after {
+  background: #707070;/*ハンバーガーメニューを押したときの色*/
+}
+input[type=checkbox] {
+  display: none; 
+  }input[type=checkbox]:checked ~ #overlay {
+  visibility: visible; 
+}
+input[type=checkbox]:checked ~ #overlay-button:hover span, input[type=checkbox]:checked ~ #overlay-button span {
+  background: transparent;
+    }input[type=checkbox]:checked ~ #overlay-button span:before {
+  transform: rotate(45deg) translate(7px, 7px);
+
+}input[type=checkbox]:checked ~ #overlay-button span:after {
+  transform: rotate(-45deg) translate(7px, -7px);
+
+
+}
+#overlay {
+  height: 100vh;
+  width: 30vw;
+  background: #b0deec;/*タブを開いた時の背景*/
+  z-index: 2;
+  visibility: hidden;
+  position: fixed;
+  top: 0; /* 上から固定 */
+  right: 0; /* 右側に固定 */
+
+}#overlay ul {
+    color:#fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  height: 100vh;
+  padding-left: 0;
+  list-style-type: none;
+}
+#overlay ul li {
+  padding: 1em;
+}
+#overlay ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.5em;
+}
+#overlay ul li a:hover {
+  color: #707070!important;
+}
+    .navbar {
+            position: relative;
+            background-color: #b0deec;
+            padding: 40px 10px; /* ヘッダー全体の余白 */
+            display: flex;
+            justify-content: center; /*左右エリアを中央に寄せる */
+            align-items: center;
+            width:98vw;
+            gap: 30px; /* 各エリア間のスペース */
+            /* margin-left:0; */
+        }
+        
+        /* 半円を突き出す円形写真 */
+        .photo-wrapper {
+            position: absolute;
+            top: 100%; /* ヘッダー下に半円分突き出す */
+            left: 50%;
+            transform: translate(-50%, -50%); /* 写真を中央揃え */
+            width: 220px; /* 写真サイズをさらに大きく */
+            height: 220px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .photo-wrapper:hover{
+
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 写真内部の画像 */
+        .circular-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 写真の形を調整 */
+        }
+        
+        /* タブの配置エリア */
+        .nav-links {
+            display: flex;
+            gap: 60px; /* タブ間のスペース */
+            justify-content: center;
+            margin-left:0;
+        }
+        
+        /* タブ */
+        .tab1 {
+            flex-grow:1;
+            text-decoration: none;
+            color: #fff; /* 文字色 */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            transition: background-color 0.3s, transform 0.2s;
+        
+        }
+        .tab2 {
+            flex-grow:1;
+            text-decoration: none;
+            color: #fff; /* 文字色 */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            transition: background-color 0.3s, transform 0.2s;
+        
+        }
+        .tab3 {
+            flex-grow: 1;
+            text-decoration: none;
+            color: #fff; /* 文字色 */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            transition: background-color 0.3s, transform 0.2s;
+        
+        }
+        .tab4 {
+            flex-grow: 1;
+            text-decoration: none;
+            color: #fff; /* 文字色 */
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            transition: background-color 0.3s, transform 0.2s;
+        
+        }
+
+        
+        .tab1:hover {
+            color: #707070; /* ホバー時の色 */
+        }
+        .tab2:hover {
+            color: #707070; /* ホバー時の色 */
+        }
+        .tab3:hover {
+            color: #707070; /* ホバー時の色 */
+        }
+        .tab4:hover {
+            color: #707070; /* ホバー時の色 */
+        }
+
+        /* ヘッダー左右エリアを中央に寄せる */
+        .nav-links:first-child {
+            margin-right: 160px; /* 写真に近づける */
+        }
+        
+        .nav-links:last-child {
+            margin-left: 160px; /* 写真に近づける */
+        }
+
+        .plan-container {
+        margin: 100px 50px;
+        margin-left:0;
+        }
+
+        
+        @keyframes bugfix {
+  from {
+    padding: 0;
+  }  to {
+    padding: 0;
+  }
+}@-webkit-keyframes bugfix {
+  from {
+    padding: 0;
+  }  to {
+    padding: 0;
+  }
+}
+
+.plan-list {
+    margin-top: 60px;  /* 2行分くらいのスペースを追加 */
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <!-- 左側のリンク -->
+            <div class="nav-links">
+                <a href="{% url 'home' %}" class="tab1">ホーム</a>
+                <a href="{% url 'logout' %}" class="tab2">ログアウト</a>
+          </div>
+   
+            <!-- 中央の円形写真 -->
+            <div class="photo-wrapper">
+                {%load static%}
+                <a href ="{% url 'home' %}"><img src="{%static 'app/images/icon.png'%}" alt="ponunn" class="circular-photo"></a>
+            </div>
+   
+            <!-- 右側のリンク -->
+            <div class="nav-links">
+                <a href="{% url 'application' %}" class="tab3">お問い合わせ</a></li>
+                {% if applicant_id %}
+                <a href="{% url 'add_spot' applicant_id=applicant_id %}" class="tab4">スポット</a>
+            {% else %}
+                <a href="#" class="tab4" onclick="alert('観光協会申請後にスポットを追加できます'); return false;">スポット</a>
+            {% endif %}
+            
+          </div>
+        </nav>
+        
+        
+        <input type="checkbox" id="overlay-input" />
+        <label for="overlay-input" id="overlay-button">
+            <span></span>
+        </label>
+        <div id="overlay">
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+                <li><a href="{% url 'application' %}">Contact</a></li>
+                {% if applicant_id %}
+                    <li><a href="{% url 'add_spot' applicant_id=applicant_id %}">Add spots</a></li>
+                {% else %}
+                    <li><span>申請後にスポットを追加できます</span></li>
+                {% endif %}
+            </ul>
+        </div>
+         
+
+    </header>
+    {% block body %}
+    {% endblock %}
+</body>
+</html>
