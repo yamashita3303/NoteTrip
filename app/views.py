@@ -597,6 +597,7 @@ def approve_view(request, plan_id, uid, token):
                     messages.success(request, 'プランに参加しました。')
                 else:
                     messages.info(request, 'プラン参加を拒否しました。')
+                    return redirect("top")
                 return redirect('home')
             return render(request, 'app/approve.html', {'plan': plan, 'user': user})
 
